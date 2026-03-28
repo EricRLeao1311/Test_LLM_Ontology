@@ -1,0 +1,90 @@
+{
+  "indexes": [
+    {
+      "name": "idx_lineitem_orderkey",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Repeated joins and EXISTS probes use lineitem via l_orderkey: Q3, Q4, Q9, Q11, Q17, Q20, and Q22 all join or semi-join lineitem to orders on l_orderkey = o_orderkey; Q17 also groups by l_orderkey in a subquery.",
+      "benefits": "Reduces full scans of lineitem for order-to-lineitem joins, improves semi-join/EXISTS lookups, and helps grouped access by order key. High-confidence because lineitem is the largest table and this join key is used across many queries.",
+      "tradeoffs": "Adds write and maintenance overhead on the largest table and consumes extra storage. Some queries may still prefer sequential scans when predicates are very unselective.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_orders_custkey",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Orders is repeatedly joined from customer by o_custkey in Q3, Q4, Q6, Q7, Q9, Q12, Q17, and checked in NOT EXISTS by customer key in Q21.",
+      "benefits": "Speeds customer-to-orders joins and anti-joins, especially when customer-side filters first reduce the customer set, such as c_mktsegment in Q3 and phone/account filters in Q21.",
+      "tradeoffs": "Extra index maintenance on inserts/updates to orders and additional storage. Existing o_orderdate index already supports date filters, so this adds another access path rather than replacing one.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_partsupp_partkey_suppkey",
+      "table": "partsupp",
+      "type": "composite",
+      "columns": [
+        "ps_partkey",
+        "ps_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q2, Q8, Q10, Q15, and Q19 repeatedly access partsupp by part key and then supplier key, or join on both keys together; Q8 specifically matches ps_partkey = l_partkey and ps_suppkey = l_suppkey.",
+      "benefits": "Improves two-column joins against partsupp, supports correlated lookups by part, and is especially useful for Q8 and Q19 where both keys are involved. Higher value than separate single-column indexes because the workload frequently uses the pair.",
+      "tradeoffs": "Consumes more storage than a single-column index and adds maintenance overhead on partsupp writes. Less useful for predicates on ps_suppkey alone due to leading-column order.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_lineitem_partkey_suppkey",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_partkey",
+        "l_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q8 joins lineitem to partsupp on the pair (l_partkey, l_suppkey), and Q19 correlates lineitem by both part and supplier under a shipdate range. This pair appears together in the same workload patterns more than once.",
+      "benefits": "Supports pairwise joins and correlated lookups involving part-supplier combinations, reducing lineitem scan cost in queries that otherwise must filter a large fact table using two dimensions.",
+      "tradeoffs": "Additional maintenance overhead on lineitem and possible overlap with other lineitem indexes. Limited benefit for queries using only l_suppkey or only l_partkey.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_lineitem_receiptdate_partial",
+      "table": "lineitem",
+      "type": "partial",
+      "columns": [
+        "l_receiptdate"
+      ],
+      "where": "l_commitdate < l_receiptdate",
+      "workload_pattern": "Q11 and Q22 both use the predicate l_commitdate < l_receiptdate; Q11 also filters a receipt-date range, and Q20 uses late-receipt logic in correlated checks.",
+      "benefits": "Targets only late-receipt rows, shrinking index size relative to a full index and accelerating recurring late-shipment queries. The indexed receipt date supports the range predicate used with the same business condition.",
+      "tradeoffs": "Useful mainly when the late-receipt predicate remains common; if most rows satisfy the predicate, selectivity advantage drops. Still adds maintenance cost for qualifying lineitem rows.",
+      "rules_triggered": [
+        "RuleSimplePartialIndex"
+      ]
+    }
+  ],
+  "materialized_views": [],
+  "global_observations": [
+    "The workload is TPC-H-like and read-heavy, with most benefit concentrated on join keys in lineitem, orders, and partsupp.",
+    "Very small dimension tables such as region, nation, and supplier have low row counts, so additional indexes there are unlikely to outperform sequential scans.",
+    "Existing single-column indexes already cover lineitem.l_shipdate, orders.o_orderdate, and several part attributes; suggestions avoid duplicating those exact paths.",
+    "Text predicates with leading wildcards or function-wrapped columns (for example LIKE '%...%' and LOWER(...)) are poor candidates for standard PostgreSQL B-tree indexes under the allowed actions, so they were not recommended.",
+    "Because lineitem is the largest table, only high-confidence indexes with repeated workload support were proposed to balance read gains against write and storage cost."
+  ],
+  "ontology_notes": "RuleHypSimpleIndex supports missing single-column indexes on frequently used join/filter columns such as l_orderkey and o_custkey. RuleHypCompositeIndex supports paired-column recommendations where the same-table column combination appears together in workload predicates or joins, such as partsupp(ps_partkey, ps_suppkey) and lineitem(l_partkey, l_suppkey). RuleSimplePartialIndex supports a PostgreSQL partial index for the recurring predicate l_commitdate < l_receiptdate. A redundant composite suggestion on orders(o_orderdate, o_custkey) was removed because an index already exists on o_orderdate and the added composite path was not sufficiently justified against overlap."
+}

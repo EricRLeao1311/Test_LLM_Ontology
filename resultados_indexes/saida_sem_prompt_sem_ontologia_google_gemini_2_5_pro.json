@@ -1,0 +1,84 @@
+{
+  "indexes": [
+    {
+      "name": "idx_supplier_s_nationkey",
+      "table": "supplier",
+      "type": "simple",
+      "columns": [
+        "s_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "Queries que realizam junções entre as tabelas `supplier`, `nation` e `customer` (Q2, Q4, Q6, Q7, Q8, Q10, Q19, Q20).",
+      "benefits": "Acelera as junções frequentes baseadas na chave da nação (`s_nationkey`), que é um padrão comum em várias queries da carga de trabalho. Evita a varredura completa da tabela `supplier` ao iniciar a junção a partir da tabela `nation`.",
+      "tradeoffs": "Aumenta ligeiramente o tempo de operações de escrita (INSERT, UPDATE, DELETE) na tabela `supplier` e o consumo de espaço em disco."
+    },
+    {
+      "name": "idx_orders_o_custkey_o_orderdate",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_custkey",
+        "o_orderdate"
+      ],
+      "where": null,
+      "workload_pattern": "Queries que juntam `customer` com `orders` e depois filtram por um intervalo de datas (Q3, Q4, Q9).",
+      "benefits": "Otimiza o plano de consulta permitindo uma busca eficiente por índice (Index Seek) na junção com `customer` (usando `o_custkey`) e, em seguida, uma varredura de intervalo no mesmo índice (Index Range Scan) para o filtro de data (`o_orderdate`), reduzindo drasticamente a leitura de dados da tabela.",
+      "tradeoffs": "Custo adicional de armazenamento e uma pequena penalidade de desempenho em operações de escrita na tabela `orders`. A ordem das colunas no índice é crucial para este padrão."
+    },
+    {
+      "name": "idx_lineitem_l_orderkey_l_suppkey",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "A maioria das queries que envolvem a tabela `lineitem` para junções com `orders` (via `l_orderkey`) ou `supplier`/`partsupp` (via `l_suppkey`), como Q3, Q4, Q6, Q7, Q8, Q9, Q11, Q17, Q20.",
+      "benefits": "Melhora o desempenho das junções na tabela mais volumosa do banco de dados (`lineitem`). Um único índice pode servir a múltiplos padrões de junção, tornando-o altamente eficaz para a carga de trabalho geral.",
+      "tradeoffs": "Por ser na maior tabela, este índice terá um impacto significativo no uso de disco e no tempo necessário para operações de escrita e manutenção de índices."
+    },
+    {
+      "name": "idx_lineitem_l_shipdate_l_quantity_l_discount",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_shipdate",
+        "l_quantity",
+        "l_discount"
+      ],
+      "where": null,
+      "workload_pattern": "Queries que aplicam filtros de intervalo em `l_shipdate`, `l_quantity` e `l_discount` (principalmente Q1 e Q5).",
+      "benefits": "Permite que o banco de dados filtre linhas de forma muito mais eficiente usando apenas o índice, sem precisar acessar a tabela principal para verificar as condições de `l_quantity` e `l_discount`, após filtrar por `l_shipdate`.",
+      "tradeoffs": "Adiciona outro índice grande na tabela `lineitem`, aumentando ainda mais os custos de armazenamento e manutenção associados a operações de escrita."
+    },
+    {
+      "name": "idx_part_p_brand_p_container",
+      "table": "part",
+      "type": "composite",
+      "columns": [
+        "p_brand",
+        "p_container"
+      ],
+      "where": null,
+      "workload_pattern": "Queries que filtram a tabela `part` por marca e tipo de contêiner (Q16, Q18).",
+      "benefits": "Acelera as consultas que aplicam filtros múltiplos e seletivos na tabela `part`. O índice composto é mais eficiente do que combinar múltiplos índices de coluna única.",
+      "tradeoffs": "Aumenta o custo de armazenamento e o overhead de escrita para a tabela `part`."
+    },
+    {
+      "name": "idx_partial_lineitem_returned",
+      "table": "lineitem",
+      "type": "partial",
+      "columns": [
+        "l_orderkey"
+      ],
+      "where": "l_returnflag = 'R'",
+      "workload_pattern": "Query Q9, que foca em clientes com itens devolvidos (`l_returnflag = 'R'`).",
+      "benefits": "Cria um índice muito menor e mais rápido do que um índice completo, pois armazena entradas apenas para uma pequena fração das linhas. Isso acelera drasticamente a consulta específica sem sobrecarregar o sistema com um índice grande.",
+      "tradeoffs": "O índice é útil apenas para consultas que filtram exatamente por `l_returnflag = 'R'`. Seu benefício é nulo para outras queries. O custo de manutenção é baixo devido ao seu tamanho reduzido."
+    }
+  ],
+  "materialized_views": [],
+  "global_observations": [],
+  "ontology_notes": null
+}

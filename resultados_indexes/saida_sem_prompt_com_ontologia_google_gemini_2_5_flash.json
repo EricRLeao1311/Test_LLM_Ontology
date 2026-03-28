@@ -1,0 +1,1348 @@
+{
+  "indexes": [
+    {
+      "name": "hyp_c_custkey",
+      "table": "customer",
+      "type": "simple",
+      "columns": [
+        "c_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q3, Q4, Q6, Q7, Q9, Q12, Q17, Q21 (Used in JOINs and subqueries)",
+      "benefits": "Improves join performance with 'orders' table and subquery filtering.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_c_nationkey",
+      "table": "customer",
+      "type": "simple",
+      "columns": [
+        "c_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q4, Q6, Q7, Q9 (Used in JOINs)",
+      "benefits": "Enhances join performance with 'nation' table.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_c_mktsegment",
+      "table": "customer",
+      "type": "simple",
+      "columns": [
+        "c_mktsegment"
+      ],
+      "where": null,
+      "workload_pattern": "Q3 (Used in WHERE clause)",
+      "benefits": "Speeds up filtering on market segment.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_c_acctbal",
+      "table": "customer",
+      "type": "simple",
+      "columns": [
+        "c_acctbal"
+      ],
+      "where": null,
+      "workload_pattern": "Q9, Q21 (Used in GROUP BY and WHERE clause)",
+      "benefits": "Improves performance for grouping and filtering by account balance.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_c_phone",
+      "table": "customer",
+      "type": "simple",
+      "columns": [
+        "c_phone"
+      ],
+      "where": null,
+      "workload_pattern": "Q9, Q21 (Used in GROUP BY and WHERE clause with SUBSTR)",
+      "benefits": "Assists in grouping and filtering by phone number (even with function calls, though less effective).",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_o_custkey",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q3, Q4, Q6, Q7, Q9, Q12, Q17, Q21 (Used in JOINs and subqueries)",
+      "benefits": "Improves join performance with 'customer' table and subquery filtering.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_o_orderkey",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q3, Q4, Q6, Q7, Q8, Q9, Q11, Q17, Q20, Q22 (Used in JOINs and subqueries)",
+      "benefits": "Crucial for join performance with 'lineitem' table and subquery filtering.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_o_orderstatus",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_orderstatus"
+      ],
+      "where": null,
+      "workload_pattern": "Q20 (Used in WHERE clause)",
+      "benefits": "Speeds up filtering by order status.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_o_shippriority",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_shippriority"
+      ],
+      "where": null,
+      "workload_pattern": "Q3 (Used in GROUP BY clause)",
+      "benefits": "Improves performance for grouping by ship priority.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_o_orderpriority",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_orderpriority"
+      ],
+      "where": null,
+      "workload_pattern": "Q22 (Used in GROUP BY and ORDER BY clauses)",
+      "benefits": "Optimizes grouping and ordering by order priority.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_o_comment",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_comment"
+      ],
+      "where": null,
+      "workload_pattern": "Q12 (Used in WHERE clause with LIKE)",
+      "benefits": "Assists in filtering by comment (though less effective with leading wildcards).",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_l_orderkey",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q3, Q4, Q6, Q7, Q8, Q9, Q11, Q17, Q20, Q22 (Used in JOINs and subqueries)",
+      "benefits": "Crucial for join performance with 'orders' table and subquery filtering.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_l_partkey",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_partkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q7, Q8, Q13, Q15, Q16, Q19 (Used in JOINs and subqueries)",
+      "benefits": "Improves join performance with 'part' table and subquery filtering.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_l_suppkey",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q4, Q6, Q7, Q8, Q14, Q19, Q20 (Used in JOINs and GROUP BY)",
+      "benefits": "Enhances join performance with 'supplier' and 'partsupp' tables, and grouping.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_l_quantity",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_quantity"
+      ],
+      "where": null,
+      "workload_pattern": "Q5, Q16, Q18 (Used in WHERE clause and subquery aggregation)",
+      "benefits": "Speeds up filtering by quantity.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_l_discount",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_discount"
+      ],
+      "where": null,
+      "workload_pattern": "Q5 (Used in WHERE clause)",
+      "benefits": "Improves filtering by discount range.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_l_returnflag",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_returnflag"
+      ],
+      "where": null,
+      "workload_pattern": "Q1, Q9 (Used in WHERE and GROUP BY clauses)",
+      "benefits": "Optimizes filtering and grouping by return flag.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_l_linestatus",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_linestatus"
+      ],
+      "where": null,
+      "workload_pattern": "Q1 (Used in GROUP BY clause)",
+      "benefits": "Improves performance for grouping by line status.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_l_commitdate",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_commitdate"
+      ],
+      "where": null,
+      "workload_pattern": "Q11, Q20, Q22 (Used in WHERE clause)",
+      "benefits": "Speeds up filtering by commit date.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_l_receiptdate",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_receiptdate"
+      ],
+      "where": null,
+      "workload_pattern": "Q11, Q20, Q22 (Used in WHERE clause)",
+      "benefits": "Speeds up filtering by receipt date.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_l_shipmode",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_shipmode"
+      ],
+      "where": null,
+      "workload_pattern": "Q11, Q18 (Used in WHERE and GROUP BY clauses)",
+      "benefits": "Optimizes filtering and grouping by ship mode.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_l_shipinstruct",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_shipinstruct"
+      ],
+      "where": null,
+      "workload_pattern": "Q18 (Used in WHERE clause)",
+      "benefits": "Speeds up filtering by ship instruction.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_n_nationkey",
+      "table": "nation",
+      "type": "simple",
+      "columns": [
+        "n_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q2, Q4, Q6, Q7, Q8, Q9, Q10, Q19, Q20 (Used in JOINs)",
+      "benefits": "Crucial for join performance with 'customer' and 'supplier' tables.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_n_name",
+      "table": "nation",
+      "type": "simple",
+      "columns": [
+        "n_name"
+      ],
+      "where": null,
+      "workload_pattern": "Q4, Q6, Q9, Q10, Q19, Q20 (Used in WHERE and GROUP BY clauses)",
+      "benefits": "Optimizes filtering and grouping by nation name.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_n_regionkey",
+      "table": "nation",
+      "type": "simple",
+      "columns": [
+        "n_regionkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q2, Q4, Q7 (Used in JOINs)",
+      "benefits": "Enhances join performance with 'region' table.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_p_partkey",
+      "table": "part",
+      "type": "simple",
+      "columns": [
+        "p_partkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q2, Q7, Q8, Q13, Q15, Q16, Q19 (Used in JOINs and subqueries)",
+      "benefits": "Crucial for join performance with 'lineitem' and 'partsupp' tables.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_ps_partkey",
+      "table": "partsupp",
+      "type": "simple",
+      "columns": [
+        "ps_partkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q2, Q8, Q10, Q15, Q19 (Used in JOINs and GROUP BY)",
+      "benefits": "Improves join performance with 'part' and 'lineitem' tables, and grouping.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_ps_suppkey",
+      "table": "partsupp",
+      "type": "simple",
+      "columns": [
+        "ps_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q2, Q8, Q10, Q15, Q19 (Used in JOINs and subqueries)",
+      "benefits": "Enhances join performance with 'supplier' and 'lineitem' tables.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_ps_availqty",
+      "table": "partsupp",
+      "type": "simple",
+      "columns": [
+        "ps_availqty"
+      ],
+      "where": null,
+      "workload_pattern": "Q19 (Used in WHERE clause)",
+      "benefits": "Speeds up filtering by available quantity.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_ps_supplycost",
+      "table": "partsupp",
+      "type": "simple",
+      "columns": [
+        "ps_supplycost"
+      ],
+      "where": null,
+      "workload_pattern": "Q2 (Used in WHERE clause and subquery MIN aggregation)",
+      "benefits": "Improves filtering and subquery performance for supply cost.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_r_name",
+      "table": "region",
+      "type": "simple",
+      "columns": [
+        "r_name"
+      ],
+      "where": null,
+      "workload_pattern": "Q2, Q4, Q7 (Used in WHERE clause)",
+      "benefits": "Speeds up filtering by region name.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_s_suppkey",
+      "table": "supplier",
+      "type": "simple",
+      "columns": [
+        "s_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q2, Q6, Q8, Q10, Q15, Q19, Q20 (Used in JOINs and subqueries)",
+      "benefits": "Crucial for join performance with 'lineitem' and 'partsupp' tables.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_s_nationkey",
+      "table": "supplier",
+      "type": "simple",
+      "columns": [
+        "s_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q2, Q4, Q6, Q7, Q8, Q9, Q10, Q19, Q20 (Used in JOINs)",
+      "benefits": "Enhances join performance with 'nation' table.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_s_acctbal",
+      "table": "supplier",
+      "type": "simple",
+      "columns": [
+        "s_acctbal"
+      ],
+      "where": null,
+      "workload_pattern": "Q2, Q9 (Used in ORDER BY and SELECT)",
+      "benefits": "Improves sorting performance by account balance.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_s_name",
+      "table": "supplier",
+      "type": "simple",
+      "columns": [
+        "s_name"
+      ],
+      "where": null,
+      "workload_pattern": "Q2, Q19, Q20 (Used in ORDER BY and GROUP BY)",
+      "benefits": "Optimizes sorting and grouping by supplier name.",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_s_comment",
+      "table": "supplier",
+      "type": "simple",
+      "columns": [
+        "s_comment"
+      ],
+      "where": null,
+      "workload_pattern": "Q15 (Used in WHERE clause with LIKE)",
+      "benefits": "Assists in filtering by comment (though less effective with leading wildcards).",
+      "tradeoffs": "Increases write overhead and storage."
+    },
+    {
+      "name": "hyp_orders_o_custkey_o_orderkey",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_custkey",
+        "o_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q3, Q4, Q6, Q7, Q9, Q17, Q22 (Frequent JOINs)",
+      "benefits": "Significantly improves join performance between 'customer' and 'orders', and 'orders' and 'lineitem'.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_lineitem_l_orderkey_l_shipdate",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_shipdate"
+      ],
+      "where": null,
+      "workload_pattern": "Q3, Q13, Q14 (JOIN and range filter)",
+      "benefits": "Optimizes queries joining on orderkey and filtering by shipdate.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_customer_c_custkey_c_nationkey",
+      "table": "customer",
+      "type": "composite",
+      "columns": [
+        "c_custkey",
+        "c_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q4, Q6, Q7, Q9 (Frequent JOINs)",
+      "benefits": "Improves join performance with 'orders' and 'nation' tables.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_lineitem_l_orderkey_l_suppkey",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q4, Q6, Q7, Q8, Q19, Q20 (Frequent JOINs)",
+      "benefits": "Enhances join performance with 'orders' and 'supplier' tables.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_supplier_s_suppkey_s_nationkey",
+      "table": "supplier",
+      "type": "composite",
+      "columns": [
+        "s_suppkey",
+        "s_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q4, Q6, Q7, Q8, Q10, Q19, Q20 (Frequent JOINs)",
+      "benefits": "Optimizes join performance with 'lineitem'/'partsupp' and 'nation' tables.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_nation_n_nationkey_n_regionkey",
+      "table": "nation",
+      "type": "composite",
+      "columns": [
+        "n_nationkey",
+        "n_regionkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q4, Q7 (Frequent JOINs)",
+      "benefits": "Improves join performance with 'region' table.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_lineitem_l_shipdate_l_discount",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_shipdate",
+        "l_discount"
+      ],
+      "where": null,
+      "workload_pattern": "Q5 (Multiple filters)",
+      "benefits": "Speeds up queries filtering by shipdate and discount.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_lineitem_l_shipdate_l_quantity",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_shipdate",
+        "l_quantity"
+      ],
+      "where": null,
+      "workload_pattern": "Q5 (Multiple filters)",
+      "benefits": "Speeds up queries filtering by shipdate and quantity.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_lineitem_l_discount_l_quantity",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_discount",
+        "l_quantity"
+      ],
+      "where": null,
+      "workload_pattern": "Q5 (Multiple filters)",
+      "benefits": "Speeds up queries filtering by discount and quantity.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_nation_n_nationkey_n_name",
+      "table": "nation",
+      "type": "composite",
+      "columns": [
+        "n_nationkey",
+        "n_name"
+      ],
+      "where": null,
+      "workload_pattern": "Q6, Q10, Q19, Q20 (JOIN and filter)",
+      "benefits": "Optimizes queries joining on nationkey and filtering by nation name.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_part_p_partkey_p_type",
+      "table": "part",
+      "type": "composite",
+      "columns": [
+        "p_partkey",
+        "p_type"
+      ],
+      "where": null,
+      "workload_pattern": "Q7, Q15, Q16 (JOIN and filter)",
+      "benefits": "Improves queries joining on partkey and filtering by part type.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_part_p_partkey_p_brand",
+      "table": "part",
+      "type": "composite",
+      "columns": [
+        "p_partkey",
+        "p_brand"
+      ],
+      "where": null,
+      "workload_pattern": "Q15, Q16, Q18 (JOIN and filter)",
+      "benefits": "Improves queries joining on partkey and filtering by brand.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_part_p_partkey_p_container",
+      "table": "part",
+      "type": "composite",
+      "columns": [
+        "p_partkey",
+        "p_container"
+      ],
+      "where": null,
+      "workload_pattern": "Q16, Q18 (JOIN and filter)",
+      "benefits": "Improves queries joining on partkey and filtering by container.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_part_p_partkey_p_size",
+      "table": "part",
+      "type": "composite",
+      "columns": [
+        "p_partkey",
+        "p_size"
+      ],
+      "where": null,
+      "workload_pattern": "Q15, Q18 (JOIN and filter)",
+      "benefits": "Improves queries joining on partkey and filtering by size.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_partsupp_ps_partkey_ps_suppkey",
+      "table": "partsupp",
+      "type": "composite",
+      "columns": [
+        "ps_partkey",
+        "ps_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q8, Q10, Q15, Q19 (Frequent JOINs)",
+      "benefits": "Optimizes join performance with 'part' and 'supplier' tables.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_lineitem_l_orderkey_l_returnflag",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_returnflag"
+      ],
+      "where": null,
+      "workload_pattern": "Q9 (JOIN and filter)",
+      "benefits": "Speeds up queries joining on orderkey and filtering by return flag.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_lineitem_l_orderkey_l_shipmode",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_shipmode"
+      ],
+      "where": null,
+      "workload_pattern": "Q11 (JOIN and filter)",
+      "benefits": "Optimizes queries joining on orderkey and filtering by ship mode.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_lineitem_l_orderkey_l_commitdate",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_commitdate"
+      ],
+      "where": null,
+      "workload_pattern": "Q11, Q20, Q22 (JOIN and filter)",
+      "benefits": "Speeds up queries joining on orderkey and filtering by commit date.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_lineitem_l_orderkey_l_receiptdate",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_receiptdate"
+      ],
+      "where": null,
+      "workload_pattern": "Q11, Q20, Q22 (JOIN and filter)",
+      "benefits": "Speeds up queries joining on orderkey and filtering by receipt date.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_lineitem_l_commitdate_l_receiptdate",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_commitdate",
+        "l_receiptdate"
+      ],
+      "where": null,
+      "workload_pattern": "Q11, Q20, Q22 (Multiple filters)",
+      "benefits": "Optimizes queries filtering by both commit and receipt dates.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_lineitem_l_shipdate_l_commitdate",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_shipdate",
+        "l_commitdate"
+      ],
+      "where": null,
+      "workload_pattern": "Q11 (Multiple filters)",
+      "benefits": "Speeds up queries filtering by shipdate and commitdate.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_orders_o_custkey_o_comment",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_custkey",
+        "o_comment"
+      ],
+      "where": null,
+      "workload_pattern": "Q12 (JOIN and filter)",
+      "benefits": "Improves queries joining on custkey and filtering by comment.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_lineitem_l_partkey_l_quantity",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_partkey",
+        "l_quantity"
+      ],
+      "where": null,
+      "workload_pattern": "Q16, Q18 (JOIN and filter)",
+      "benefits": "Optimizes queries joining on partkey and filtering by quantity.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_lineitem_l_partkey_l_shipmode",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_partkey",
+        "l_shipmode"
+      ],
+      "where": null,
+      "workload_pattern": "Q18 (JOIN and filter)",
+      "benefits": "Speeds up queries joining on partkey and filtering by ship mode.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_lineitem_l_partkey_l_shipinstruct",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_partkey",
+        "l_shipinstruct"
+      ],
+      "where": null,
+      "workload_pattern": "Q18 (JOIN and filter)",
+      "benefits": "Speeds up queries joining on partkey and filtering by ship instruction.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_partsupp_ps_partkey_ps_availqty",
+      "table": "partsupp",
+      "type": "composite",
+      "columns": [
+        "ps_partkey",
+        "ps_availqty"
+      ],
+      "where": null,
+      "workload_pattern": "Q19 (Multiple filters)",
+      "benefits": "Optimizes queries filtering by partkey and available quantity.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_lineitem_l_suppkey_l_shipdate",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_suppkey",
+        "l_shipdate"
+      ],
+      "where": null,
+      "workload_pattern": "Q19 (Multiple filters)",
+      "benefits": "Speeds up queries filtering by supplier key and shipdate.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_orders_o_orderkey_o_orderstatus",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_orderkey",
+        "o_orderstatus"
+      ],
+      "where": null,
+      "workload_pattern": "Q20 (JOIN and filter)",
+      "benefits": "Optimizes queries joining on orderkey and filtering by order status.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_customer_c_phone_c_acctbal",
+      "table": "customer",
+      "type": "composite",
+      "columns": [
+        "c_phone",
+        "c_acctbal"
+      ],
+      "where": null,
+      "workload_pattern": "Q21 (Multiple filters)",
+      "benefits": "Speeds up queries filtering by phone and account balance.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_customer_c_custkey_c_phone",
+      "table": "customer",
+      "type": "composite",
+      "columns": [
+        "c_custkey",
+        "c_phone"
+      ],
+      "where": null,
+      "workload_pattern": "Q21 (Multiple filters)",
+      "benefits": "Optimizes queries filtering by customer key and phone.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_customer_c_custkey_c_acctbal",
+      "table": "customer",
+      "type": "composite",
+      "columns": [
+        "c_custkey",
+        "c_acctbal"
+      ],
+      "where": null,
+      "workload_pattern": "Q21 (Multiple filters)",
+      "benefits": "Optimizes queries filtering by customer key and account balance.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_orders_o_orderkey_o_orderdate",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_orderkey",
+        "o_orderdate"
+      ],
+      "where": null,
+      "workload_pattern": "Q17, Q22 (JOIN and range filter)",
+      "benefits": "Optimizes queries joining on orderkey and filtering by order date.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "hyp_orders_o_orderkey_o_orderpriority",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_orderkey",
+        "o_orderpriority"
+      ],
+      "where": null,
+      "workload_pattern": "Q22 (JOIN and group/order by)",
+      "benefits": "Optimizes queries joining on orderkey and grouping/ordering by order priority.",
+      "tradeoffs": "Increases write overhead and storage; less effective for queries not using both columns in order."
+    },
+    {
+      "name": "partial_p_size_hash_1",
+      "table": "part",
+      "type": "partial",
+      "columns": [
+        "p_size"
+      ],
+      "where": "p_size = 7",
+      "workload_pattern": "Q2 (Specific filter)",
+      "benefits": "Significantly speeds up queries filtering for p_size = 7.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_p_type_hash_2",
+      "table": "part",
+      "type": "partial",
+      "columns": [
+        "p_type"
+      ],
+      "where": "p_type LIKE '%ECONOMY ANODIZED STEEL'",
+      "workload_pattern": "Q2 (Specific filter)",
+      "benefits": "Speeds up queries filtering for this specific p_type pattern (less effective due to leading wildcard).",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_r_name_hash_3",
+      "table": "region",
+      "type": "partial",
+      "columns": [
+        "r_name"
+      ],
+      "where": "r_name = 'EUROPE'",
+      "workload_pattern": "Q2, Q6 (Specific filter)",
+      "benefits": "Speeds up queries filtering for r_name = 'EUROPE'.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_c_mktsegment_hash_4",
+      "table": "customer",
+      "type": "partial",
+      "columns": [
+        "c_mktsegment"
+      ],
+      "where": "c_mktsegment = 'HOUSEHOLD'",
+      "workload_pattern": "Q3 (Specific filter)",
+      "benefits": "Speeds up queries filtering for c_mktsegment = 'HOUSEHOLD'.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_r_name_hash_5",
+      "table": "region",
+      "type": "partial",
+      "columns": [
+        "r_name"
+      ],
+      "where": "r_name = 'ASIA'",
+      "workload_pattern": "Q4 (Specific filter)",
+      "benefits": "Speeds up queries filtering for r_name = 'ASIA'.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_n_name_hash_6",
+      "table": "nation",
+      "type": "partial",
+      "columns": [
+        "n_name"
+      ],
+      "where": "n_name = 'UNITED STATES'",
+      "workload_pattern": "Q6, Q10, Q19 (Specific filter)",
+      "benefits": "Speeds up queries filtering for n_name = 'UNITED STATES'.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_r_name_hash_7",
+      "table": "region",
+      "type": "partial",
+      "columns": [
+        "r_name"
+      ],
+      "where": "r_name = 'AFRICA'",
+      "workload_pattern": "Q7 (Specific filter)",
+      "benefits": "Speeds up queries filtering for r_name = 'AFRICA'.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_p_type_hash_8",
+      "table": "part",
+      "type": "partial",
+      "columns": [
+        "p_type"
+      ],
+      "where": "p_type = 'LARGE PLATED NICKEL'",
+      "workload_pattern": "Q7 (Specific filter)",
+      "benefits": "Speeds up queries filtering for p_type = 'LARGE PLATED NICKEL'.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_p_name_hash_9",
+      "table": "part",
+      "type": "partial",
+      "columns": [
+        "p_name"
+      ],
+      "where": "p_name LIKE '%pale%'",
+      "workload_pattern": "Q8 (Specific filter)",
+      "benefits": "Speeds up queries filtering for this specific p_name pattern (less effective due to leading wildcard).",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_l_returnflag_hash_10",
+      "table": "lineitem",
+      "type": "partial",
+      "columns": [
+        "l_returnflag"
+      ],
+      "where": "l_returnflag = 'R'",
+      "workload_pattern": "Q9 (Specific filter)",
+      "benefits": "Speeds up queries filtering for l_returnflag = 'R'.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_n_name_hash_11",
+      "table": "nation",
+      "type": "partial",
+      "columns": [
+        "n_name"
+      ],
+      "where": "n_name = 'INDIA'",
+      "workload_pattern": "Q10 (Specific filter)",
+      "benefits": "Speeds up queries filtering for n_name = 'INDIA'.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_l_shipmode_hash_12",
+      "table": "lineitem",
+      "type": "partial",
+      "columns": [
+        "l_shipmode"
+      ],
+      "where": "l_shipmode = 'SHIP'",
+      "workload_pattern": "Q11, Q18 (Specific filter)",
+      "benefits": "Speeds up queries filtering for l_shipmode = 'SHIP'.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_l_shipmode_hash_13",
+      "table": "lineitem",
+      "type": "partial",
+      "columns": [
+        "l_shipmode"
+      ],
+      "where": "l_shipmode = 'MAIL'",
+      "workload_pattern": "Q11, Q18 (Specific filter)",
+      "benefits": "Speeds up queries filtering for l_shipmode = 'MAIL'.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_o_comment_hash_14",
+      "table": "orders",
+      "type": "partial",
+      "columns": [
+        "o_comment"
+      ],
+      "where": "o_comment NOT LIKE '%requests%'",
+      "workload_pattern": "Q12 (Specific filter)",
+      "benefits": "Speeds up queries filtering for o_comment NOT LIKE '%requests%' (less effective due to leading wildcard).",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_p_brand_hash_15",
+      "table": "part",
+      "type": "partial",
+      "columns": [
+        "p_brand"
+      ],
+      "where": "p_brand <> 'Brand#23'",
+      "workload_pattern": "Q15 (Specific filter)",
+      "benefits": "Speeds up queries filtering for p_brand <> 'Brand#23'.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_p_type_hash_16",
+      "table": "part",
+      "type": "partial",
+      "columns": [
+        "p_type"
+      ],
+      "where": "LOWER(p_type) LIKE '%small brushed brass%'",
+      "workload_pattern": "Q15 (Specific filter)",
+      "benefits": "Speeds up queries filtering for this specific p_type pattern (less effective due to function and leading wildcard).",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_p_size_hash_17",
+      "table": "part",
+      "type": "partial",
+      "columns": [
+        "p_size"
+      ],
+      "where": "p_size IN (8, 42, 33, 21, 7, 46, 23, 3)",
+      "workload_pattern": "Q15 (Specific filter)",
+      "benefits": "Speeds up queries filtering for p_size within the specified list.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_s_comment_hash_18",
+      "table": "supplier",
+      "type": "partial",
+      "columns": [
+        "s_comment"
+      ],
+      "where": "LOWER(s_comment) LIKE '%carefully%'",
+      "workload_pattern": "Q15 (Specific filter)",
+      "benefits": "Speeds up queries filtering for this specific s_comment pattern (less effective due to function and leading wildcard).",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_p_brand_hash_19",
+      "table": "part",
+      "type": "partial",
+      "columns": [
+        "p_brand"
+      ],
+      "where": "p_brand = 'Brand#52'",
+      "workload_pattern": "Q16 (Specific filter)",
+      "benefits": "Speeds up queries filtering for p_brand = 'Brand#52'.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_p_container_hash_20",
+      "table": "part",
+      "type": "partial",
+      "columns": [
+        "p_container"
+      ],
+      "where": "p_container = 'WRAP PACK'",
+      "workload_pattern": "Q16 (Specific filter)",
+      "benefits": "Speeds up queries filtering for p_container = 'WRAP PACK'.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_p_brand_hash_21",
+      "table": "part",
+      "type": "partial",
+      "columns": [
+        "p_brand"
+      ],
+      "where": "p_brand = 'Brand#25'",
+      "workload_pattern": "Q18 (Specific filter)",
+      "benefits": "Speeds up queries filtering for p_brand = 'Brand#25'.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_p_container_hash_22",
+      "table": "part",
+      "type": "partial",
+      "columns": [
+        "p_container"
+      ],
+      "where": "p_container IN ('MED PACK', 'SM BAG', 'WRAP PKG', 'MED CAN')",
+      "workload_pattern": "Q18 (Specific filter)",
+      "benefits": "Speeds up queries filtering for p_container within the specified list.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_p_size_hash_23",
+      "table": "part",
+      "type": "partial",
+      "columns": [
+        "p_size"
+      ],
+      "where": "p_size BETWEEN 32 AND 28",
+      "workload_pattern": "Q18 (Specific filter)",
+      "benefits": "Speeds up queries filtering for p_size within the specified range.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_l_shipmode_hash_24",
+      "table": "lineitem",
+      "type": "partial",
+      "columns": [
+        "l_shipmode"
+      ],
+      "where": "l_shipmode = 'AIR'",
+      "workload_pattern": "Q18 (Specific filter)",
+      "benefits": "Speeds up queries filtering for l_shipmode = 'AIR'.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_l_shipinstruct_hash_25",
+      "table": "lineitem",
+      "type": "partial",
+      "columns": [
+        "l_shipinstruct"
+      ],
+      "where": "l_shipinstruct = 'TAKE BACK RETURN'",
+      "workload_pattern": "Q18 (Specific filter)",
+      "benefits": "Speeds up queries filtering for l_shipinstruct = 'TAKE BACK RETURN'.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_p_brand_hash_26",
+      "table": "part",
+      "type": "partial",
+      "columns": [
+        "p_brand"
+      ],
+      "where": "p_brand = 'Brand#43'",
+      "workload_pattern": "Q18 (Specific filter)",
+      "benefits": "Speeds up queries filtering for p_brand = 'Brand#43'.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_p_container_hash_27",
+      "table": "part",
+      "type": "partial",
+      "columns": [
+        "p_container"
+      ],
+      "where": "p_container IN ('JUMBO BOX', 'WRAP PKG', 'LG CAN', 'LG PACK')",
+      "workload_pattern": "Q18 (Specific filter)",
+      "benefits": "Speeds up queries filtering for p_container within the specified list.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_p_size_hash_28",
+      "table": "part",
+      "type": "partial",
+      "columns": [
+        "p_size"
+      ],
+      "where": "p_size BETWEEN 21 AND 18",
+      "workload_pattern": "Q18 (Specific filter)",
+      "benefits": "Speeds up queries filtering for p_size within the specified range.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_l_shipinstruct_hash_29",
+      "table": "lineitem",
+      "type": "partial",
+      "columns": [
+        "l_shipinstruct"
+      ],
+      "where": "l_shipinstruct = 'DELIVER IN PERSON'",
+      "workload_pattern": "Q18 (Specific filter)",
+      "benefits": "Speeds up queries filtering for l_shipinstruct = 'DELIVER IN PERSON'.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_p_brand_hash_30",
+      "table": "part",
+      "type": "partial",
+      "columns": [
+        "p_brand"
+      ],
+      "where": "p_brand = 'Brand#44'",
+      "workload_pattern": "Q18 (Specific filter)",
+      "benefits": "Speeds up queries filtering for p_brand = 'Brand#44'.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_p_container_hash_31",
+      "table": "part",
+      "type": "partial",
+      "columns": [
+        "p_container"
+      ],
+      "where": "p_container IN ('SM PKG', 'LG CAN', 'MED JAR', 'JUMBO PKG')",
+      "workload_pattern": "Q18 (Specific filter)",
+      "benefits": "Speeds up queries filtering for p_container within the specified list.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_p_size_hash_32",
+      "table": "part",
+      "type": "partial",
+      "columns": [
+        "p_size"
+      ],
+      "where": "p_size BETWEEN 8 AND 62",
+      "workload_pattern": "Q18 (Specific filter)",
+      "benefits": "Speeds up queries filtering for p_size within the specified range.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_l_shipmode_hash_33",
+      "table": "lineitem",
+      "type": "partial",
+      "columns": [
+        "l_shipmode"
+      ],
+      "where": "l_shipmode = 'REG AIR'",
+      "workload_pattern": "Q18 (Specific filter)",
+      "benefits": "Speeds up queries filtering for l_shipmode = 'REG AIR'.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_l_shipinstruct_hash_34",
+      "table": "lineitem",
+      "type": "partial",
+      "columns": [
+        "l_shipinstruct"
+      ],
+      "where": "l_shipinstruct = 'NONE'",
+      "workload_pattern": "Q18 (Specific filter)",
+      "benefits": "Speeds up queries filtering for l_shipinstruct = 'NONE'.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_p_name_hash_35",
+      "table": "part",
+      "type": "partial",
+      "columns": [
+        "p_name"
+      ],
+      "where": "p_name LIKE '%cornsilk%'",
+      "workload_pattern": "Q19 (Specific filter)",
+      "benefits": "Speeds up queries filtering for this specific p_name pattern (less effective due to leading wildcard).",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_o_orderstatus_hash_36",
+      "table": "orders",
+      "type": "partial",
+      "columns": [
+        "o_orderstatus"
+      ],
+      "where": "o_orderstatus = 'F'",
+      "workload_pattern": "Q20 (Specific filter)",
+      "benefits": "Speeds up queries filtering for o_orderstatus = 'F'.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_n_name_hash_37",
+      "table": "nation",
+      "type": "partial",
+      "columns": [
+        "n_name"
+      ],
+      "where": "n_name = 'FRANCE'",
+      "workload_pattern": "Q20 (Specific filter)",
+      "benefits": "Speeds up queries filtering for n_name = 'FRANCE'.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_c_phone_hash_38",
+      "table": "customer",
+      "type": "partial",
+      "columns": [
+        "c_phone"
+      ],
+      "where": "substr(c_phone, 1, 2) IN ('32', '11', '29', '25', '22', '15', '12')",
+      "workload_pattern": "Q21 (Specific filter)",
+      "benefits": "Speeds up queries filtering for c_phone prefixes (less effective due to function call).",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_c_acctbal_hash_39",
+      "table": "customer",
+      "type": "partial",
+      "columns": [
+        "c_acctbal"
+      ],
+      "where": "c_acctbal > 0.00",
+      "workload_pattern": "Q21 (Specific filter)",
+      "benefits": "Speeds up queries filtering for c_acctbal > 0.00.",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    },
+    {
+      "name": "partial_c_phone_hash_40",
+      "table": "customer",
+      "type": "partial",
+      "columns": [
+        "c_phone"
+      ],
+      "where": "substr(c_phone, 1, 2) IN ('29', '26', '29', '22', '12', '28', '14')",
+      "workload_pattern": "Q21 (Specific filter)",
+      "benefits": "Speeds up queries filtering for c_phone prefixes (less effective due to function call).",
+      "tradeoffs": "Increases write overhead and storage; only useful for the specific filter condition."
+    }
+  ],
+  "materialized_views": [],
+  "global_observations": [],
+  "ontology_notes": null
+}

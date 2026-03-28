@@ -1,0 +1,285 @@
+{
+  "indexes": [
+    {
+      "name": "hyp_l_shipdate",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_shipdate"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering on l_shipdate.",
+      "benefits": "Speeds up queries that filter or sort by l_shipdate.",
+      "tradeoffs": "Slight overhead on inserts/updates/deletes to lineitem."
+    },
+    {
+      "name": "hyp_o_orderdate",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_orderdate"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering on o_orderdate.",
+      "benefits": "Speeds up queries that filter or sort by o_orderdate.",
+      "tradeoffs": "Slight overhead on inserts/updates/deletes to orders."
+    },
+    {
+      "name": "hyp_p_type",
+      "table": "part",
+      "type": "simple",
+      "columns": [
+        "p_type"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering on p_type.",
+      "benefits": "Speeds up queries that filter by p_type.",
+      "tradeoffs": "Slight overhead on inserts/updates/deletes to part."
+    },
+    {
+      "name": "hyp_p_size",
+      "table": "part",
+      "type": "simple",
+      "columns": [
+        "p_size"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering on p_size.",
+      "benefits": "Speeds up queries that filter by p_size.",
+      "tradeoffs": "Slight overhead on inserts/updates/deletes to part."
+    },
+    {
+      "name": "hyp_p_name",
+      "table": "part",
+      "type": "simple",
+      "columns": [
+        "p_name"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering on p_name.",
+      "benefits": "Speeds up queries that filter by p_name.",
+      "tradeoffs": "Slight overhead on inserts/updates/deletes to part."
+    },
+    {
+      "name": "hyp_p_container",
+      "table": "part",
+      "type": "simple",
+      "columns": [
+        "p_container"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering on p_container.",
+      "benefits": "Speeds up queries that filter by p_container.",
+      "tradeoffs": "Slight overhead on inserts/updates/deletes to part."
+    },
+    {
+      "name": "hyp_p_brand",
+      "table": "part",
+      "type": "simple",
+      "columns": [
+        "p_brand"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering on p_brand.",
+      "benefits": "Speeds up queries that filter by p_brand.",
+      "tradeoffs": "Slight overhead on inserts/updates/deletes to part."
+    },
+    {
+      "name": "hyp_c_mktsegment",
+      "table": "customer",
+      "type": "simple",
+      "columns": [
+        "c_mktsegment"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering on c_mktsegment.",
+      "benefits": "Speeds up queries that filter by c_mktsegment.",
+      "tradeoffs": "Slight overhead on inserts/updates/deletes to customer."
+    },
+    {
+      "name": "hyp_l_returnflag",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_returnflag"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering on l_returnflag.",
+      "benefits": "Speeds up queries that filter by l_returnflag.",
+      "tradeoffs": "Slight overhead on inserts/updates/deletes to lineitem."
+    },
+    {
+      "name": "hyp_l_linestatus",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_linestatus"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering on l_linestatus.",
+      "benefits": "Speeds up queries that filter by l_linestatus.",
+      "tradeoffs": "Slight overhead on inserts/updates/deletes to lineitem."
+    },
+    {
+      "name": "hyp_o_orderstatus",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_orderstatus"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering on o_orderstatus.",
+      "benefits": "Speeds up queries that filter by o_orderstatus.",
+      "tradeoffs": "Slight overhead on inserts/updates/deletes to orders."
+    },
+    {
+      "name": "hyp_o_orderpriority",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_orderpriority"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering on o_orderpriority.",
+      "benefits": "Speeds up queries that filter by o_orderpriority.",
+      "tradeoffs": "Slight overhead on inserts/updates/deletes to orders."
+    },
+    {
+      "name": "hyp_p_mfgr",
+      "table": "part",
+      "type": "simple",
+      "columns": [
+        "p_mfgr"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering on p_mfgr.",
+      "benefits": "Speeds up queries that filter by p_mfgr.",
+      "tradeoffs": "Slight overhead on inserts/updates/deletes to part."
+    },
+    {
+      "name": "hyp_s_nationkey",
+      "table": "supplier",
+      "type": "simple",
+      "columns": [
+        "s_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering on s_nationkey.",
+      "benefits": "Speeds up queries that join or filter on s_nationkey.",
+      "tradeoffs": "Slight overhead on inserts/updates/deletes to supplier."
+    },
+    {
+      "name": "hyp_c_nationkey",
+      "table": "customer",
+      "type": "simple",
+      "columns": [
+        "c_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering on c_nationkey.",
+      "benefits": "Speeds up queries that join or filter on c_nationkey.",
+      "tradeoffs": "Slight overhead on inserts/updates/deletes to customer."
+    },
+    {
+      "name": "hyp_n_regionkey",
+      "table": "nation",
+      "type": "simple",
+      "columns": [
+        "n_regionkey"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering on n_regionkey.",
+      "benefits": "Speeds up queries that join or filter on n_regionkey.",
+      "tradeoffs": "Slight overhead on inserts/updates/deletes to nation."
+    },
+    {
+      "name": "hyp_r_name",
+      "table": "region",
+      "type": "simple",
+      "columns": [
+        "r_name"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering on r_name.",
+      "benefits": "Speeds up queries that filter by r_name.",
+      "tradeoffs": "Slight overhead on inserts/updates/deletes to region."
+    },
+    {
+      "name": "hyp_ps_partkey_ps_suppkey",
+      "table": "partsupp",
+      "type": "composite",
+      "columns": [
+        "ps_partkey",
+        "ps_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering on ps_partkey and ps_suppkey together.",
+      "benefits": "Speeds up queries that filter on both ps_partkey and ps_suppkey.",
+      "tradeoffs": "Slight overhead on inserts/updates/deletes to partsupp."
+    },
+    {
+      "name": "hyp_l_orderkey_l_linenumber",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_linenumber"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering on l_orderkey and l_linenumber together.",
+      "benefits": "Speeds up queries that filter on both l_orderkey and l_linenumber.",
+      "tradeoffs": "Slight overhead on inserts/updates/deletes to lineitem."
+    },
+    {
+      "name": "hyp_partial_l_returnflag_r",
+      "table": "lineitem",
+      "type": "partial",
+      "columns": [
+        "l_returnflag"
+      ],
+      "where": "l_returnflag = 'R'",
+      "workload_pattern": "Queries filtering specifically for l_returnflag = 'R'.",
+      "benefits": "Optimizes queries that frequently filter for a specific return flag.",
+      "tradeoffs": "Increased overhead for inserts/updates/deletes on lineitem, and index maintenance."
+    },
+    {
+      "name": "hyp_partial_l_linestatus_f",
+      "table": "lineitem",
+      "type": "partial",
+      "columns": [
+        "l_linestatus"
+      ],
+      "where": "l_linestatus = 'F'",
+      "workload_pattern": "Queries filtering specifically for l_linestatus = 'F'.",
+      "benefits": "Optimizes queries that frequently filter for a specific line status.",
+      "tradeoffs": "Increased overhead for inserts/updates/deletes on lineitem, and index maintenance."
+    },
+    {
+      "name": "hyp_partial_o_orderstatus_f",
+      "table": "orders",
+      "type": "partial",
+      "columns": [
+        "o_orderstatus"
+      ],
+      "where": "o_orderstatus = 'F'",
+      "workload_pattern": "Queries filtering specifically for o_orderstatus = 'F'.",
+      "benefits": "Optimizes queries that frequently filter for a specific order status.",
+      "tradeoffs": "Increased overhead for inserts/updates/deletes on orders, and index maintenance."
+    },
+    {
+      "name": "hyp_partial_p_type_promo",
+      "table": "part",
+      "type": "partial",
+      "columns": [
+        "p_type"
+      ],
+      "where": "p_type LIKE 'PROMO%'",
+      "workload_pattern": "Queries filtering for parts with type starting with 'PROMO'.",
+      "benefits": "Speeds up queries that specifically look for promotional parts.",
+      "tradeoffs": "Increased overhead for inserts/updates/deletes on part, and index maintenance."
+    }
+  ],
+  "materialized_views": [],
+  "global_observations": [],
+  "ontology_notes": null
+}

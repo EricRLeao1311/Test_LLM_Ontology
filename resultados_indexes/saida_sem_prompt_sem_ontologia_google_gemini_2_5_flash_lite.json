@@ -1,0 +1,264 @@
+{
+  "indexes": [
+    {
+      "name": "idx_customer_nationkey",
+      "table": "customer",
+      "type": "simple",
+      "columns": [
+        "c_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "Queries joining customer with nation or filtering by nation.",
+      "benefits": "Speeds up joins and filters involving customer's nation.",
+      "tradeoffs": "Slight overhead on inserts/updates/deletes for the customer table."
+    },
+    {
+      "name": "idx_orders_custkey_orderdate",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_custkey",
+        "o_orderdate"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering orders by customer and date range, or joining orders with customer and filtering by date.",
+      "benefits": "Optimizes queries that frequently filter or join on both customer key and order date.",
+      "tradeoffs": "Increased overhead on inserts/updates/deletes for the orders table compared to single-column indexes."
+    },
+    {
+      "name": "idx_lineitem_orderkey_linenumber",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_linenumber"
+      ],
+      "where": null,
+      "workload_pattern": "Queries joining lineitem with orders and filtering by line number, or retrieving specific line items within an order.",
+      "benefits": "Efficiently retrieves specific line items for a given order.",
+      "tradeoffs": "Increased overhead on inserts/updates/deletes for the lineitem table."
+    },
+    {
+      "name": "idx_partsupp_partkey_suppkey",
+      "table": "partsupp",
+      "type": "composite",
+      "columns": [
+        "ps_partkey",
+        "ps_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Queries joining partsupp with part and supplier, or looking up supply costs for a specific part and supplier.",
+      "benefits": "Speeds up joins between partsupp, part, and supplier tables.",
+      "tradeoffs": "Increased overhead on inserts/updates/deletes for the partsupp table."
+    },
+    {
+      "name": "idx_supplier_nationkey",
+      "table": "supplier",
+      "type": "simple",
+      "columns": [
+        "s_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "Queries joining supplier with nation or filtering by nation.",
+      "benefits": "Speeds up joins and filters involving supplier's nation.",
+      "tradeoffs": "Slight overhead on inserts/updates/deletes for the supplier table."
+    },
+    {
+      "name": "idx_lineitem_returnflag_linestatus",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_returnflag",
+        "l_linestatus"
+      ],
+      "where": null,
+      "workload_pattern": "Queries that group or filter lineitems by return status and line status (e.g., Q1).",
+      "benefits": "Significantly improves performance for queries that aggregate or filter based on these two columns.",
+      "tradeoffs": "Increased overhead on inserts/updates/deletes for the lineitem table."
+    },
+    {
+      "name": "idx_part_type_size",
+      "table": "part",
+      "type": "composite",
+      "columns": [
+        "p_type",
+        "p_size"
+      ],
+      "where": null,
+      "workload_pattern": "Queries that filter parts by type and size (e.g., Q2).",
+      "benefits": "Optimizes queries that search for parts based on both type and size.",
+      "tradeoffs": "Increased overhead on inserts/updates/deletes for the part table."
+    },
+    {
+      "name": "idx_orders_orderdate_custkey",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_orderdate",
+        "o_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Queries that filter orders by date and customer key (e.g., Q3).",
+      "benefits": "Improves performance for queries that need to filter orders by a date range and then join with customer.",
+      "tradeoffs": "Increased overhead on inserts/updates/deletes for the orders table."
+    },
+    {
+      "name": "idx_lineitem_shipdate",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_shipdate"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering lineitems by ship date (e.g., Q5, Q6, Q11, Q13, Q14, Q16, Q17, Q18, Q19, Q20, Q21, Q22).",
+      "benefits": "Speeds up range queries on ship dates.",
+      "tradeoffs": "Slight overhead on inserts/updates/deletes for the lineitem table."
+    },
+    {
+      "name": "idx_customer_mktsegment",
+      "table": "customer",
+      "type": "simple",
+      "columns": [
+        "c_mktsegment"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering customers by market segment (e.g., Q3).",
+      "benefits": "Accelerates queries that filter customers based on their market segment.",
+      "tradeoffs": "Slight overhead on inserts/updates/deletes for the customer table."
+    },
+    {
+      "name": "idx_part_brand_type_size",
+      "table": "part",
+      "type": "composite",
+      "columns": [
+        "p_brand",
+        "p_type",
+        "p_size"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering parts by brand, type, and size (e.g., Q16).",
+      "benefits": "Optimizes complex filtering conditions on parts.",
+      "tradeoffs": "Increased overhead on inserts/updates/deletes for the part table."
+    },
+    {
+      "name": "idx_orders_orderdate_priority",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_orderdate",
+        "o_orderpriority"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering orders by date and priority (e.g., Q22).",
+      "benefits": "Improves performance for queries that need to filter orders by a date range and then by priority.",
+      "tradeoffs": "Increased overhead on inserts/updates/deletes for the orders table."
+    },
+    {
+      "name": "idx_lineitem_partkey_suppkey",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_partkey",
+        "l_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Queries joining lineitem with part and supplier, or looking up lineitem details for a specific part and supplier.",
+      "benefits": "Speeds up joins between lineitem, part, and supplier tables.",
+      "tradeoffs": "Increased overhead on inserts/updates/deletes for the lineitem table."
+    },
+    {
+      "name": "idx_customer_phone_prefix",
+      "table": "customer",
+      "type": "partial",
+      "columns": [
+        "c_phone"
+      ],
+      "where": "substr(c_phone, 1, 2) IN ('32', '11', '29', '25', '22', '15', '12')",
+      "workload_pattern": "Queries filtering customers by specific phone number prefixes (e.g., Q22).",
+      "benefits": "Optimizes queries that frequently filter customers based on a limited set of phone number prefixes, without indexing the entire table.",
+      "tradeoffs": "Index maintenance overhead is limited to rows matching the WHERE clause."
+    },
+    {
+      "name": "idx_orders_custkey_orderstatus",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_custkey",
+        "o_orderstatus"
+      ],
+      "where": null,
+      "workload_pattern": "Queries joining orders with customer and filtering by order status (e.g., Q21).",
+      "benefits": "Improves performance for queries that need to join orders with customer and filter by order status.",
+      "tradeoffs": "Increased overhead on inserts/updates/deletes for the orders table."
+    },
+    {
+      "name": "idx_part_mfgr_brand_type",
+      "table": "part",
+      "type": "composite",
+      "columns": [
+        "p_mfgr",
+        "p_brand",
+        "p_type"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering parts by manufacturer, brand, and type.",
+      "benefits": "Optimizes complex filtering conditions on parts involving manufacturer, brand, and type.",
+      "tradeoffs": "Increased overhead on inserts/updates/deletes for the part table."
+    },
+    {
+      "name": "idx_lineitem_orderkey_suppkey",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Queries joining lineitem with orders and supplier, or looking up lineitem details for a specific order and supplier.",
+      "benefits": "Speeds up joins between lineitem, orders, and supplier tables.",
+      "tradeoffs": "Increased overhead on inserts/updates/deletes for the lineitem table."
+    },
+    {
+      "name": "idx_part_type_promo",
+      "table": "part",
+      "type": "partial",
+      "columns": [
+        "p_type"
+      ],
+      "where": "p_type LIKE 'PROMO%'",
+      "workload_pattern": "Queries filtering parts by 'PROMO%' type (e.g., Q13).",
+      "benefits": "Optimizes queries that specifically look for 'PROMO%' parts, without indexing all part types.",
+      "tradeoffs": "Index maintenance overhead is limited to rows matching the WHERE clause."
+    },
+    {
+      "name": "idx_orders_orderdate_custkey_priority",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_orderdate",
+        "o_custkey",
+        "o_orderpriority"
+      ],
+      "where": null,
+      "workload_pattern": "Queries filtering orders by date, customer, and priority.",
+      "benefits": "Improves performance for complex filtering and joining scenarios involving these three columns.",
+      "tradeoffs": "Increased overhead on inserts/updates/deletes for the orders table."
+    },
+    {
+      "name": "idx_lineitem_orderkey_partkey",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_partkey"
+      ],
+      "where": null,
+      "workload_pattern": "Queries joining lineitem with orders and part, or looking up lineitem details for a specific order and part.",
+      "benefits": "Speeds up joins between lineitem, orders, and part tables.",
+      "tradeoffs": "Increased overhead on inserts/updates/deletes for the lineitem table."
+    }
+  ],
+  "materialized_views": [],
+  "global_observations": [],
+  "ontology_notes": null
+}

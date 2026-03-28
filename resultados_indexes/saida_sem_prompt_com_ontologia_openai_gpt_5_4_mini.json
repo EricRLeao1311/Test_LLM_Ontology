@@ -1,0 +1,147 @@
+{
+  "indexes": [
+    {
+      "name": "idx_hyp_lineitem_shipdate_orderkey",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_shipdate",
+        "l_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Filters on l_shipdate in Q1, Q5, Q14, Q15, Q20 and join/filter on l_orderkey in several TPC-H queries; useful for date-driven access with subsequent order lookup.",
+      "benefits": "Improves selectivity for date predicates and can help combine range filtering with join navigation on lineitem.",
+      "tradeoffs": "Extra storage and slower inserts/updates on the largest table; may be less useful when queries only filter by l_shipdate alone."
+    },
+    {
+      "name": "idx_hyp_lineitem_orderkey_shipdate",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_shipdate"
+      ],
+      "where": null,
+      "workload_pattern": "Join on l_orderkey is central in Q3, Q4, Q6, Q7, Q8, Q9, Q11, Q12, Q17, Q18, Q19, Q20, Q22; l_shipdate also appears in range filters and join-related subqueries.",
+      "benefits": "Helps merge lineitem joins by orderkey with shipdate-restricted workloads and can reduce scanned rows for order-centric queries.",
+      "tradeoffs": "Competes with a shipdate-first index; column order matters, so it is not a universal fix for all lineitem access paths."
+    },
+    {
+      "name": "idx_hyp_orders_custkey_orderdate",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_custkey",
+        "o_orderdate"
+      ],
+      "where": null,
+      "workload_pattern": "Frequent joins on o_custkey plus orderdate ranges in Q3, Q4, Q7, Q9, Q10, Q11, Q12, Q17, Q18, Q22.",
+      "benefits": "Speeds customer-to-orders lookups while preserving range filtering on order date for time-window queries.",
+      "tradeoffs": "Adds maintenance cost on orders; if queries mostly filter by date only, the existing single-column date index may be preferable."
+    },
+    {
+      "name": "idx_hyp_customer_mktsegment_custkey",
+      "table": "customer",
+      "type": "composite",
+      "columns": [
+        "c_mktsegment",
+        "c_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q3 filters by c_mktsegment and joins via c_custkey to orders.",
+      "benefits": "Supports selective segment filtering followed by fast join into orders, reducing the customer set early.",
+      "tradeoffs": "Limited benefit beyond segment-driven queries; extra index overhead on a relatively small table."
+    },
+    {
+      "name": "idx_hyp_part_type_size",
+      "table": "part",
+      "type": "composite",
+      "columns": [
+        "p_type",
+        "p_size"
+      ],
+      "where": null,
+      "workload_pattern": "Q2 filters on p_type and p_size; Q8/Q15/Q16 also filter on part attributes, with p_type and p_size appearing together in key predicates.",
+      "benefits": "Improves combined filtering on part classification attributes and can reduce candidate rows before joins to partsupp/lineitem.",
+      "tradeoffs": "May not help when queries use only one of the two columns; existing single-column indexes already cover each separately."
+    },
+    {
+      "name": "idx_hyp_part_brand_container",
+      "table": "part",
+      "type": "composite",
+      "columns": [
+        "p_brand",
+        "p_container"
+      ],
+      "where": null,
+      "workload_pattern": "Q19 uses p_brand with p_container lists in multiple OR branches; Q15/Q16/Q18 also rely on brand-related filters.",
+      "benefits": "Speeds combined brand/container predicates and helps prune part rows earlier in branch-heavy queries.",
+      "tradeoffs": "OR-heavy predicates may still limit index efficiency; maintenance overhead on part updates."
+    },
+    {
+      "name": "idx_hyp_supplier_nationkey_suppkey",
+      "table": "supplier",
+      "type": "composite",
+      "columns": [
+        "s_nationkey",
+        "s_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Used in joins from supplier to nation and lineitem in Q4, Q5, Q7, Q8, Q9, Q10, Q11, Q16, Q20.",
+      "benefits": "Supports nation-based supplier filtering with quick supplier key access for downstream joins.",
+      "tradeoffs": "Less helpful for workloads that join only on s_suppkey or only filter by nationkey; adds write cost."
+    },
+    {
+      "name": "idx_hyp_partsupp_partkey_suppkey",
+      "table": "partsupp",
+      "type": "composite",
+      "columns": [
+        "ps_partkey",
+        "ps_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Core join path in Q2, Q8, Q9, Q10, Q15, Q20 where partsupp is matched by part and supplier keys.",
+      "benefits": "Accelerates the dominant join pattern on partsupp and can reduce lookup cost in correlated subqueries.",
+      "tradeoffs": "Additional storage on an 8000-row table; benefit is concentrated in join-heavy queries."
+    },
+    {
+      "name": "idx_hyp_lineitem_shipdate_recent",
+      "table": "lineitem",
+      "type": "partial",
+      "columns": [
+        "l_shipdate"
+      ],
+      "where": "l_shipdate >= DATE '1994-01-01'",
+      "workload_pattern": "Many workload queries filter on shipdate windows in the mid-to-late 1990s, especially Q1, Q5, Q14, Q15, Q20.",
+      "benefits": "Shrinks the index to the more frequently queried recent rows, improving cache residency and range scan speed for date-window queries.",
+      "tradeoffs": "Only helps queries inside the chosen date range; not useful for older or broad shipdate scans."
+    },
+    {
+      "name": "idx_hyp_orders_recent_orderdate",
+      "table": "orders",
+      "type": "partial",
+      "columns": [
+        "o_orderdate"
+      ],
+      "where": "o_orderdate >= DATE '1993-01-01'",
+      "workload_pattern": "Q3, Q4, Q7, Q9, Q10, Q11, Q12, Q17, Q18, Q22 use orderdate windows concentrated in the 1993-1998 range.",
+      "benefits": "Creates a smaller, more selective index for the active portion of the orders timeline used by the workload.",
+      "tradeoffs": "Less general than a full index; queries outside the filtered range will not benefit."
+    },
+    {
+      "name": "idx_hyp_lineitem_returnflag_receiptdate",
+      "table": "lineitem",
+      "type": "partial",
+      "columns": [
+        "l_returnflag"
+      ],
+      "where": "l_returnflag = 'R' AND l_receiptdate >= DATE '1995-02-14'",
+      "workload_pattern": "Q10 filters on returnflag = 'R' with an orderdate window, and Q12 filters on receiptdate ranges with shipping constraints.",
+      "benefits": "Targets the return-flagged subset and can speed the revenue-by-returned-orders query pattern.",
+      "tradeoffs": "Highly specialized; if the data distribution changes or queries shift, the partial predicate may become too narrow."
+    }
+  ],
+  "materialized_views": [],
+  "global_observations": [],
+  "ontology_notes": null
+}

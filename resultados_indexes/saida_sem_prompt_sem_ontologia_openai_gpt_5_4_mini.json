@@ -1,0 +1,137 @@
+{
+  "indexes": [
+    {
+      "name": "idx_lineitem_shipdate_returnflag_linestatus",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_shipdate",
+        "l_returnflag",
+        "l_linestatus"
+      ],
+      "where": null,
+      "workload_pattern": "",
+      "benefits": "",
+      "tradeoffs": ""
+    },
+    {
+      "name": "idx_orders_custkey_orderdate",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_custkey",
+        "o_orderdate"
+      ],
+      "where": null,
+      "workload_pattern": "",
+      "benefits": "",
+      "tradeoffs": ""
+    },
+    {
+      "name": "idx_lineitem_orderkey_shipdate",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_shipdate"
+      ],
+      "where": null,
+      "workload_pattern": "",
+      "benefits": "",
+      "tradeoffs": ""
+    },
+    {
+      "name": "idx_partsupp_partkey_suppkey",
+      "table": "partsupp",
+      "type": "composite",
+      "columns": [
+        "ps_partkey",
+        "ps_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "",
+      "benefits": "",
+      "tradeoffs": ""
+    },
+    {
+      "name": "idx_supplier_nationkey_suppkey",
+      "table": "supplier",
+      "type": "composite",
+      "columns": [
+        "s_nationkey",
+        "s_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "",
+      "benefits": "",
+      "tradeoffs": ""
+    },
+    {
+      "name": "idx_nation_regionkey_nationkey",
+      "table": "nation",
+      "type": "composite",
+      "columns": [
+        "n_regionkey",
+        "n_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "",
+      "benefits": "",
+      "tradeoffs": ""
+    },
+    {
+      "name": "idx_customer_nationkey_custkey",
+      "table": "customer",
+      "type": "composite",
+      "columns": [
+        "c_nationkey",
+        "c_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "",
+      "benefits": "",
+      "tradeoffs": ""
+    },
+    {
+      "name": "idx_lineitem_shipdate_partial_recent",
+      "table": "lineitem",
+      "type": "partial",
+      "columns": [
+        "l_shipdate"
+      ],
+      "where": "l_shipdate >= DATE '1994-01-01'",
+      "workload_pattern": "",
+      "benefits": "",
+      "tradeoffs": ""
+    },
+    {
+      "name": "idx_orders_orderdate_partial_recent",
+      "table": "orders",
+      "type": "partial",
+      "columns": [
+        "o_orderdate",
+        "o_custkey"
+      ],
+      "where": "o_orderdate >= DATE '1992-01-01'",
+      "workload_pattern": "",
+      "benefits": "",
+      "tradeoffs": ""
+    },
+    {
+      "name": "idx_lineitem_returnflag_shipdate_partial_r",
+      "table": "lineitem",
+      "type": "partial",
+      "columns": [
+        "l_shipdate",
+        "l_orderkey"
+      ],
+      "where": "l_returnflag = 'R'",
+      "workload_pattern": "",
+      "benefits": "",
+      "tradeoffs": ""
+    }
+  ],
+  "materialized_views": [],
+  "global_observations": [],
+  "ontology_notes": null
+}

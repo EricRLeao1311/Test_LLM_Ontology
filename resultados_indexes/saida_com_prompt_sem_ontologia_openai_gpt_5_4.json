@@ -1,0 +1,163 @@
+{
+  "indexes": [
+    {
+      "name": "idx_lineitem_orderkey",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Supports repeated joins and correlated subqueries on lineitem by order key in Q3, Q4, Q9, Q11, Q17, Q20, Q22, including EXISTS/NOT EXISTS probes and GROUP BY/HAVING on l_orderkey.",
+      "benefits": "Reduces cost of joining orders to lineitem and speeds repeated per-order existence checks and aggregations.",
+      "tradeoffs": "Adds write and storage overhead on the largest fact table.",
+      "rules_triggered": [
+        "high-frequency join key",
+        "fact-table access path"
+      ]
+    },
+    {
+      "name": "idx_lineitem_partkey_suppkey",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_partkey",
+        "l_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Targets joins and correlated lookups by part and supplier in Q8, Q19, and Q20, especially the Q20 subquery filtering lineitem on l_partkey = ps_partkey and l_suppkey = ps_suppkey with date filtering.",
+      "benefits": "Improves access into lineitem for part/supplier-driven joins and correlated checks.",
+      "tradeoffs": "Additional maintenance on lineitem and less benefit for queries driven only by shipdate.",
+      "rules_triggered": [
+        "multi-column join path",
+        "correlated subquery support"
+      ]
+    },
+    {
+      "name": "idx_lineitem_receipt_orderkey_suppkey",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_receiptdate",
+        "l_orderkey",
+        "l_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Motivated by Q11, Q20, and Q22 patterns that filter lineitem by receipt date ranges or receipt/commit conditions and then join or probe by order key and supplier key.",
+      "benefits": "Helps receipt-date-driven scans while preserving useful trailing keys for order and supplier checks.",
+      "tradeoffs": "Another index on the largest table increases insert/update cost and storage; overlaps partially with the l_orderkey index.",
+      "rules_triggered": [
+        "range filter plus join",
+        "largest-table selective access"
+      ]
+    },
+    {
+      "name": "idx_orders_custkey_orderdate",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_custkey",
+        "o_orderdate"
+      ],
+      "where": null,
+      "workload_pattern": "Supports customer-to-orders joins with date filtering in Q3, Q4, Q7, Q9, and anti-/semi-join probes in Q21. Existing index on o_orderdate alone does not cover the frequent join on o_custkey.",
+      "benefits": "Improves access when starting from filtered customer rows and then restricting orders by date, and helps NOT EXISTS/LEFT JOIN patterns by customer.",
+      "tradeoffs": "Moderate write/storage overhead on orders; some queries may still prefer the existing o_orderdate index.",
+      "rules_triggered": [
+        "join plus range filter",
+        "anti-join support"
+      ]
+    },
+    {
+      "name": "idx_orders_orderstatus_orderkey",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_orderstatus",
+        "o_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Justified by Q20, which filters orders on o_orderstatus = 'F' and joins to lineitem by o_orderkey.",
+      "benefits": "Allows quick retrieval of finished orders before joining to lineitem.",
+      "tradeoffs": "Narrower applicability than other suggestions; modest maintenance overhead on orders.",
+      "rules_triggered": [
+        "selective filter then join",
+        "query-specific optimization"
+      ]
+    },
+    {
+      "name": "idx_partsupp_partkey_suppkey",
+      "table": "partsupp",
+      "type": "composite",
+      "columns": [
+        "ps_partkey",
+        "ps_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Supports repeated joins and correlated subqueries involving partsupp keyed by part and supplier in Q2, Q8, Q10, Q15, and Q19.",
+      "benefits": "Improves joins from part to partsupp and efficient matching against supplier-specific rows.",
+      "tradeoffs": "Extra index maintenance on partsupp; less useful for queries driven only by supplier.",
+      "rules_triggered": [
+        "bridge-table composite key",
+        "join support"
+      ]
+    },
+    {
+      "name": "idx_partsupp_suppkey",
+      "table": "partsupp",
+      "type": "simple",
+      "columns": [
+        "ps_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Motivated by supplier-to-partsupp joins in Q2 and Q10 and by supplier filtering before aggregating/grouping partsupp rows.",
+      "benefits": "Speeds lookup of all partsupp rows for selected suppliers and complements the part-led composite index.",
+      "tradeoffs": "Adds another maintenance path on partsupp; benefit is smaller if plans consistently drive from part.",
+      "rules_triggered": [
+        "foreign-key-like lookup",
+        "complementary access path"
+      ]
+    },
+    {
+      "name": "idx_customer_mktsegment_custkey",
+      "table": "customer",
+      "type": "composite",
+      "columns": [
+        "c_mktsegment",
+        "c_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Driven by Q3, which filters customer on c_mktsegment and immediately joins to orders on c_custkey.",
+      "benefits": "Lets PostgreSQL isolate the requested market segment and feed matching customer keys into the orders join.",
+      "tradeoffs": "Customer is relatively small, so gains are moderate.",
+      "rules_triggered": [
+        "dimension filter then join",
+        "selective predicate"
+      ]
+    },
+    {
+      "name": "idx_supplier_nationkey",
+      "table": "supplier",
+      "type": "simple",
+      "columns": [
+        "s_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "Used in Q2, Q4, Q8, Q10, Q19, and Q20 where supplier is joined to nation, often after region or nation-name filtering.",
+      "benefits": "Helps join filtered nation rows to supplier and then onward into partsupp/lineitem.",
+      "tradeoffs": "Supplier table is small, so benefit is modest.",
+      "rules_triggered": [
+        "dimension join key",
+        "frequent cross-table filter"
+      ]
+    }
+  ],
+  "materialized_views": [],
+  "global_observations": [
+    "Existing single-column indexes on lineitem.l_shipdate and orders.o_orderdate already cover several date-range predicates, so additional shipdate-only and orderdate-only indexes were not duplicated.",
+    "The workload is TPC-H style: most benefit comes from indexing fact-table join keys and bridge-table composite keys rather than adding many low-value indexes on very small dimension tables.",
+    "Predicates with leading-wildcard LIKE or function-wrapped TEXT expressions are weak candidates for standard PostgreSQL B-tree recommendations under the allowed index types, so they were avoided.",
+    "Primary keys are not listed in metadata; recommendations focus on clearly missing join and filter paths without assuming hidden indexes."
+  ],
+  "ontology_notes": null
+}

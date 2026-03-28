@@ -1,0 +1,311 @@
+{
+  "indexes": [
+    {
+      "name": "idx_customer_c_custkey",
+      "table": "customer",
+      "type": "simple",
+      "columns": [
+        "c_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Column 'c_custkey' is frequently used in join conditions (Q3, Q4, Q9, Q12, Q17, Q21) and in GROUP BY (Q12), indicating it's likely a primary key or foreign key. A simple index will accelerate these lookups.",
+      "benefits": "Significantly improves join performance and speeds up queries filtering or grouping by customer key.",
+      "tradeoffs": "Adds overhead to INSERT/UPDATE/DELETE operations on the 'customer' table.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_customer_c_mktsegment_household",
+      "table": "customer",
+      "type": "partial",
+      "columns": [
+        "c_mktsegment"
+      ],
+      "where": "c_mktsegment = 'HOUSEHOLD'",
+      "workload_pattern": "Query Q3 filters on 'c_mktsegment = 'HOUSEHOLD''. If 'HOUSEHOLD' is a selective market segment, a partial index can be very efficient.",
+      "benefits": "Accelerates queries filtering by 'HOUSEHOLD' market segment by reducing the number of rows to scan.",
+      "tradeoffs": "Adds overhead to INSERT/UPDATE/DELETE operations on 'customer' table, especially for rows matching the predicate. Requires maintenance for the specific predicate.",
+      "rules_triggered": [
+        "RuleSimplePartialIndex"
+      ]
+    },
+    {
+      "name": "idx_lineitem_l_orderkey",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Column 'l_orderkey' is heavily used in join conditions (Q3, Q4, Q6, Q7, Q8, Q9, Q11, Q17, Q20, Q22) and subqueries (Q17, Q22), indicating it's a foreign key.",
+      "benefits": "Crucially improves performance for queries joining 'lineitem' with 'orders' and subqueries involving 'l_orderkey'.",
+      "tradeoffs": "Adds overhead to INSERT/UPDATE/DELETE operations on the 'lineitem' table.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_lineitem_l_partkey",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_partkey"
+      ],
+      "where": null,
+      "workload_pattern": "Column 'l_partkey' is frequently used in join conditions (Q7, Q8, Q13, Q16, Q18, Q19) and subqueries (Q16, Q19), indicating it's a foreign key.",
+      "benefits": "Improves join performance with the 'part' table and speeds up subqueries filtering by 'l_partkey'.",
+      "tradeoffs": "Adds overhead to INSERT/UPDATE/DELETE operations on the 'lineitem' table.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_lineitem_l_suppkey",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Column 'l_suppkey' is frequently used in join conditions (Q4, Q6, Q8, Q19, Q20) and in GROUP BY (Q14), indicating it's a foreign key.",
+      "benefits": "Accelerates joins with the 'supplier' table and improves performance for queries grouping by 'l_suppkey'.",
+      "tradeoffs": "Adds overhead to INSERT/UPDATE/DELETE operations on the 'lineitem' table.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_lineitem_returnflag_linestatus",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_returnflag",
+        "l_linestatus"
+      ],
+      "where": null,
+      "workload_pattern": "Query Q1 groups and orders by 'l_returnflag' and 'l_linestatus'. A composite index can satisfy both the grouping and ordering requirements efficiently.",
+      "benefits": "Eliminates the need for sorting for GROUP BY and ORDER BY clauses in Q1, significantly speeding up the query.",
+      "tradeoffs": "Adds overhead to INSERT/UPDATE/DELETE operations on 'lineitem' and consumes more storage than simple indexes.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_lineitem_l_receiptdate_l_commitdate",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_receiptdate",
+        "l_commitdate"
+      ],
+      "where": null,
+      "workload_pattern": "Queries Q11, Q20, and Q22 frequently filter using conditions like 'l_commitdate < l_receiptdate' or 'l_receiptdate > l_commitdate'. A composite index on these two columns can efficiently evaluate these range conditions.",
+      "benefits": "Accelerates queries filtering on the relationship between 'l_receiptdate' and 'l_commitdate'.",
+      "tradeoffs": "Adds overhead to INSERT/UPDATE/DELETE operations on 'lineitem' and consumes more storage.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_nation_n_nationkey",
+      "table": "nation",
+      "type": "simple",
+      "columns": [
+        "n_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "Column 'n_nationkey' is heavily used in join conditions (Q2, Q4, Q6, Q7, Q8, Q9, Q10, Q19, Q20), indicating it's a primary key or foreign key.",
+      "benefits": "Significantly improves join performance with 'customer', 'supplier', and other tables.",
+      "tradeoffs": "Adds overhead to INSERT/UPDATE/DELETE operations on the 'nation' table. Given the small table size (25 rows), the benefit might be marginal for some operations, but crucial for joins with larger tables.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_nation_n_name",
+      "table": "nation",
+      "type": "simple",
+      "columns": [
+        "n_name"
+      ],
+      "where": null,
+      "workload_pattern": "Column 'n_name' is frequently used in filter conditions (Q2, Q4, Q7, Q10, Q19, Q20), GROUP BY (Q4, Q6, Q8, Q9), and ORDER BY (Q2, Q6, Q8, Q9). Given the small table size (25 rows), a simple index is more efficient than multiple partial indexes.",
+      "benefits": "Accelerates filtering, grouping, and ordering operations on nation names.",
+      "tradeoffs": "Adds overhead to INSERT/UPDATE/DELETE operations on the 'nation' table.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_orders_o_orderkey",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Column 'o_orderkey' is heavily used in join conditions (Q3, Q4, Q6, Q7, Q8, Q9, Q11, Q17, Q20, Q22) and subqueries (Q17, Q22), indicating it's a primary key.",
+      "benefits": "Crucially improves performance for queries joining 'orders' with 'lineitem' and subqueries involving 'o_orderkey'.",
+      "tradeoffs": "Adds overhead to INSERT/UPDATE/DELETE operations on the 'orders' table.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_orders_o_custkey",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Column 'o_custkey' is heavily used in join conditions (Q3, Q4, Q6, Q7, Q9, Q12, Q17, Q21), indicating it's a foreign key.",
+      "benefits": "Significantly improves join performance with the 'customer' table.",
+      "tradeoffs": "Adds overhead to INSERT/UPDATE/DELETE operations on the 'orders' table.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_orders_o_orderstatus_f",
+      "table": "orders",
+      "type": "partial",
+      "columns": [
+        "o_orderstatus"
+      ],
+      "where": "o_orderstatus = 'F'",
+      "workload_pattern": "Query Q20 filters on 'o_orderstatus = 'F''. If 'F' (Finished) is a common and selective status, a partial index can be very efficient.",
+      "benefits": "Accelerates queries filtering by 'F' order status by reducing the number of rows to scan.",
+      "tradeoffs": "Adds overhead to INSERT/UPDATE/DELETE operations on 'orders' table, especially for rows matching the predicate. Requires maintenance for the specific predicate.",
+      "rules_triggered": [
+        "RuleSimplePartialIndex"
+      ]
+    },
+    {
+      "name": "idx_orders_o_orderpriority",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_orderpriority"
+      ],
+      "where": null,
+      "workload_pattern": "Column 'o_orderpriority' is used in GROUP BY and ORDER BY clauses in Q11 and Q22.",
+      "benefits": "Improves performance for queries grouping and ordering by 'o_orderpriority'.",
+      "tradeoffs": "Adds overhead to INSERT/UPDATE/DELETE operations on the 'orders' table.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_orders_o_totalprice_o_orderdate",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_totalprice",
+        "o_orderdate"
+      ],
+      "where": null,
+      "workload_pattern": "Query Q17 orders results by 'o_totalprice DESC, o_orderdate'. A composite index can satisfy this ordering directly.",
+      "benefits": "Eliminates the need for sorting for the ORDER BY clause in Q17, significantly speeding up the query.",
+      "tradeoffs": "Adds overhead to INSERT/UPDATE/DELETE operations on 'orders' and consumes more storage than simple indexes. 'o_orderdate' is already indexed, but this composite serves a specific ordering pattern.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_part_p_partkey",
+      "table": "part",
+      "type": "simple",
+      "columns": [
+        "p_partkey"
+      ],
+      "where": null,
+      "workload_pattern": "Column 'p_partkey' is heavily used in join conditions (Q2, Q7, Q8, Q13, Q15, Q16, Q18, Q19) and subqueries (Q16, Q19), indicating it's a primary key.",
+      "benefits": "Crucially improves performance for queries joining 'part' with 'lineitem' and 'partsupp', and subqueries involving 'p_partkey'.",
+      "tradeoffs": "Adds overhead to INSERT/UPDATE/DELETE operations on the 'part' table.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_part_p_type_large_plated_nickel",
+      "table": "part",
+      "type": "partial",
+      "columns": [
+        "p_type"
+      ],
+      "where": "p_type = 'LARGE PLATED NICKEL'",
+      "workload_pattern": "Query Q7 filters on 'p_type = 'LARGE PLATED NICKEL''. If this is a selective part type, a partial index can be very efficient. An existing simple index on 'p_type' exists, but a partial index can be smaller and faster for this specific predicate.",
+      "benefits": "Accelerates queries filtering by 'LARGE PLATED NICKEL' part type by reducing the number of rows to scan.",
+      "tradeoffs": "Adds overhead to INSERT/UPDATE/DELETE operations on 'part' table, especially for rows matching the predicate. Requires maintenance for the specific predicate.",
+      "rules_triggered": [
+        "RuleSimplePartialIndex"
+      ]
+    },
+    {
+      "name": "idx_partsupp_ps_partkey_ps_suppkey",
+      "table": "partsupp",
+      "type": "composite",
+      "columns": [
+        "ps_partkey",
+        "ps_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Columns 'ps_partkey' and 'ps_suppkey' are frequently used together in join conditions (Q2, Q8, Q15, Q19) and subqueries (Q10, Q19), indicating they form a composite primary key or frequently accessed foreign key pair.",
+      "benefits": "Significantly improves join performance and subquery execution involving both part and supplier keys in 'partsupp'.",
+      "tradeoffs": "Adds overhead to INSERT/UPDATE/DELETE operations on 'partsupp' and consumes more storage.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_supplier_s_suppkey",
+      "table": "supplier",
+      "type": "simple",
+      "columns": [
+        "s_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Column 's_suppkey' is heavily used in join conditions (Q2, Q4, Q6, Q7, Q8, Q10, Q15, Q19, Q20) and subqueries (Q15, Q19), indicating it's a primary key.",
+      "benefits": "Crucially improves performance for queries joining 'supplier' with 'lineitem' and 'partsupp', and subqueries involving 's_suppkey'.",
+      "tradeoffs": "Adds overhead to INSERT/UPDATE/DELETE operations on the 'supplier' table.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_supplier_s_nationkey",
+      "table": "supplier",
+      "type": "simple",
+      "columns": [
+        "s_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "Column 's_nationkey' is frequently used in join conditions (Q2, Q4, Q6, Q7, Q8, Q10, Q19, Q20), indicating it's a foreign key.",
+      "benefits": "Improves join performance with the 'nation' table.",
+      "tradeoffs": "Adds overhead to INSERT/UPDATE/DELETE operations on the 'supplier' table.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_supplier_s_name",
+      "table": "supplier",
+      "type": "simple",
+      "columns": [
+        "s_name"
+      ],
+      "where": null,
+      "workload_pattern": "Column 's_name' is used in ORDER BY (Q2, Q19, Q20) and GROUP BY (Q20) clauses.",
+      "benefits": "Improves performance for queries ordering and grouping by 's_name'.",
+      "tradeoffs": "Adds overhead to INSERT/UPDATE/DELETE operations on the 'supplier' table.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    }
+  ],
+  "materialized_views": [],
+  "global_observations": [
+    "The workload is TPC-H, which is an OLAP benchmark, implying a preference for read performance over write performance. Therefore, a higher number of indexes is generally acceptable.",
+    "Many queries involve complex joins and subqueries, making indexes on foreign key columns and frequently filtered columns critical.",
+    "Existing indexes cover some date columns (l_shipdate, o_orderdate) and part attributes (p_type, p_size, p_name, p_container, p_brand). New suggestions aim to complement these or address uncovered patterns."
+  ],
+  "ontology_notes": "The ontology rules (RuleHypSimpleIndex, RuleHypCompositeIndex, RuleSimplePartialIndex) were instrumental in identifying index candidates. RuleHypSimpleIndex was applied to single columns frequently appearing in WHERE, JOIN, GROUP BY, or ORDER BY clauses. RuleHypCompositeIndex was strictly applied to composite expressions within WHERE clauses (e.g., join conditions or multi-column filters). For composite indexes suggested for GROUP BY/ORDER BY patterns, the 'rules_triggered' field was set to null, as the ontology's RuleHypCompositeIndex explicitly targets WHERE clauses. RuleSimplePartialIndex was used for highly selective atomic predicates. For small tables like 'nation' (25 rows), a simple index on 'n_name' was preferred over multiple partial indexes, as a full scan or simple index scan would likely be efficient enough and reduce maintenance overhead."
+}

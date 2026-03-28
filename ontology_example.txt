@@ -1,0 +1,222 @@
+Ontologia OnDBTuning – Regras para Índices Hipotéticos e Parciais
+
+Vocabulário básico (conceitos principais):
+
+- tuning:Index
+    Representa um índice real existente no banco de dados.
+
+- tuning:HypotheticalIndex
+    Representa um índice hipotético sugerido pela ontologia, ainda não criado no banco.
+
+- tuning:PartialIndex
+    Representa um índice parcial, com uma condição de filtro associada (WHERE ...).
+
+- tuning:FirstColumn
+    Propriedade que liga um índice (real ou hipotético) à sua primeira coluna.
+
+- tuning:SecondColumn
+    Propriedade que liga um índice (real ou hipotético) à sua segunda coluna
+    em um índice composto.
+
+- tuning:hypIndexesColumn
+    Propriedade que liga um HypotheticalIndex à coluna que ele indexa
+    (no caso simples) ou à primeira coluna (no caso composto).
+
+- tuning:hasHypotheticalIndexName
+    Nome (string) atribuído a um índice hipotético.
+
+- tuning:hasIndexName
+    Nome (string) atribuído a um índice (real ou parcial).
+
+- tuning:hasConditionalExpression
+    Expressão condicional (por exemplo, o predicado de um WHERE) associada
+    a um índice parcial.
+
+- tuning:originatesIndSpec
+    Referência à especificação de DML ou consulta (statement) que motivou
+    a criação daquele índice.
+
+- tuning:isGeneratedBy
+    Registra qual regra de tuning (por exemplo, RuleHypSimpleIndex) gerou
+    aquele índice hipotético ou parcial.
+
+- tuning:WhereClause / tuning:AtomicExpression / tuning:CompositeExpression
+    Conceitos usados para representar partes da cláusula WHERE:
+    - WhereClause: a cláusula WHERE de um DML/consulta.
+    - AtomicExpression: um predicado atômico, como "status = 'OPEN'".
+    - CompositeExpression: combinação de predicados atômicos
+      (por exemplo, "col1 = ? AND col2 = ?").
+
+
+====================================================================
+Regra 1 – RuleHypSimpleIndex (Índice simples hipotético)
+====================================================================
+
+Nome da regra: tuning:RuleHypSimpleIndex
+
+Intuição:
+  - A regra identifica colunas que aparecem em cláusulas WHERE de consultas/DML
+    e que ainda não são a primeira (nem a segunda) coluna de nenhum índice
+    já existente.
+  - Para cada coluna assim identificada, a ontologia sugere um índice
+    hipotético simples nessa coluna.
+
+Condições (parte WHERE da regra, em linguagem natural):
+
+  1. Existe uma instância ?s do tipo tuning:WhereClause.
+  2. ?s é componente (?dm1) de um comando DML ou consulta (?dml).
+     (via alguma propriedade como tuning:componentOfDMLSt ?dml).
+  3. A cláusula WHERE ?s referencia uma coluna ?col
+     (tuning:clauseReferencesColumn ?col).
+  4. Não existe nenhum índice ?i do tipo tuning:Index tal que:
+       - tuning:FirstColumn ?col  OU
+       - tuning:SecondColumn ?col.
+     Em outras palavras, a coluna ?col ainda não é a primeira nem segunda
+     coluna de nenhum índice conhecido.
+
+Ações (parte CONSTRUCT):
+
+  - Criar um novo recurso ?uri do tipo tuning:HypotheticalIndex.
+  - Definir:
+      ?uri tuning:hypIndexesColumn ?col .
+      ?uri tuning:FirstColumn ?col .
+  - Dar um nome ao índice hipotético:
+      ?uri tuning:hasHypotheticalIndexName ?hypName .
+    onde ?hypName = CONCAT("HYP_", UCASE(?nameCol)),
+    sendo ?nameCol o nome da coluna ?col.
+  - Indicar a origem:
+      ?uri tuning:originatesIndSpec ?dml .
+  - Registrar que foi gerado por esta regra:
+      ?uri tuning:isGeneratedBy tuning:RuleHypSimpleIndex .
+
+Resumo operacional:
+  Se uma coluna aparece em condições de filtro em WHERE e ainda não é
+  coberta por nenhum índice (como primeira/segunda coluna), a ontologia
+  recomenda criar um índice hipotético simples nela, chamado "HYP_<COLUNA>".
+
+
+====================================================================
+Regra 2 – RuleHypCompositeIndex (Índice composto hipotético)
+====================================================================
+
+Nome da regra: tuning:RuleHypCompositeIndex
+
+Intuição:
+  - A regra olha para cláusulas WHERE que usam duas colunas diferentes
+    da mesma tabela na mesma expressão composta (tipicamente AND).
+  - Se ainda não existe um índice com essas duas colunas como primeira
+    e segunda coluna, a ontologia sugere um índice composto hipotético.
+
+Condições (parte WHERE da regra):
+
+  1. Existe uma instância ?s do tipo tuning:WhereClause.
+  2. ?s é componente (?dml) de um comando DML ou consulta (?dml).
+  3. A cláusula WHERE ?s referencia duas colunas distintas ?col1 e ?col2
+     (tuning:clauseReferencesColumn ?col1 e ?col2).
+  4. ?col1 e ?col2 pertencem à mesma tabela ?tab
+     (por exemplo, ?tab tuning:constitutedOf ?col1 e ?tab tuning:constitutedOf ?col2).
+  5. ?col1 ≠ ?col2 (ou seja, são colunas diferentes).
+  6. Existe uma expressão composta ?composite do tipo tuning:CompositeExpression
+     associada à cláusula WHERE ?s, com um predicado textual ?p que contém
+     as duas colunas na mesma expressão lógica (por exemplo, "col1 = ? AND col2 = ?").
+  7. Não existe índice ?i do tipo tuning:Index tal que:
+       - tuning:FirstColumn ?col1
+       - tuning:SecondColumn ?col2
+
+Ações (parte CONSTRUCT):
+
+  - Criar um novo recurso ?uri do tipo tuning:HypotheticalIndex.
+  - Definir:
+      ?uri tuning:hypIndexesColumn ?col1 .
+      ?uri tuning:FirstColumn ?col1 .
+      ?uri tuning:SecondColumn ?col2 .
+  - Dar um nome ao índice:
+      ?uri tuning:hasHypotheticalIndexName ?hypName .
+    onde ?hypName = CONCAT("HYP_", ?nameCol1, "_", ?nameCol2),
+    com ?nameCol1 e ?nameCol2 sendo os nomes das colunas ?col1 e ?col2.
+  - Indicar a origem:
+      ?uri tuning:originatesIndSpec ?dml .
+  - Registrar que foi gerado por esta regra:
+      ?uri tuning:isGeneratedBy tuning:RuleHypCompositeIndex .
+
+Resumo operacional:
+  Se duas colunas diferentes da mesma tabela aparecem juntas em um mesmo
+  predicado composto do WHERE (ex: col1 = ? AND col2 = ?) e não existe índice
+  com (FirstColumn = col1, SecondColumn = col2), a ontologia recomenda
+  criar um índice composto hipotético nessas duas colunas, chamado
+  "HYP_<COL1>_<COL2>".
+
+
+====================================================================
+Regra 3 – RuleSimplePartialIndex (Índice parcial simples)
+====================================================================
+
+Nome da regra: tuning:RuleSimplePartialIndex
+
+Intuição:
+  - A regra detecta predicados atômicos no WHERE que se referem explicitamente
+    a uma coluna (por exemplo, status = 'OPEN', active = TRUE).
+  - Para cada predicado desse tipo, a ontologia sugere um índice parcial
+    na coluna em questão, com condição de filtro igual ao predicado.
+
+Condições (parte WHERE da regra):
+
+  1. Existe uma instância ?s do tipo tuning:AtomicExpression, que representa
+     um predicado atômico de uma cláusula WHERE (por exemplo, "status = 'OPEN'").
+  2. ?s é componente de uma expressão atômica maior (?exp) e está ligado
+     a um literal ?literal, que é a descrição textual do predicado
+     (tuning:hasPredicateDescription ?atomic, tuning:hasLiteralDescription ?literal
+     ou equivalente).
+  3. Existe uma cláusula WHERE ?where do tipo tuning:WhereClause tal que:
+      ?where tuning:componentOfDMLSt ?dml
+      e ?where tuning:componentOfWhere ?s.
+  4. A expressão textual do predicado ?atomic contém o literal e o nome
+     da coluna (?columnName), geralmente verificado com regex/UCASEx.
+  5. ?c é a coluna referenciada, com tuning:hasColumnName ?columnName.
+
+Ações (parte CONSTRUCT):
+
+  - Criar um novo recurso ?uri do tipo tuning:PartialIndex.
+  - Definir:
+      ?uri tuning:FirstColumn ?c .
+      ?uri tuning:hasConditionalExpression ?compLiteral .
+  - O campo ?compLiteral é montado a partir do predicado ?atomic,
+    em geral como "WHERE " || STRAFTER(?atomic, ?columnName), resultando
+    numa string similar a "WHERE status = 'OPEN'" ou algo equivalente.
+  - Nome do índice:
+      ?uri tuning:hasIndexName ?nameIndex .
+    onde ?nameIndex = CONCAT("PARTIAL_", ?columnName, "_", MD5(?atomic)).
+    Esse MD5 é usado para diferenciar predicados distintos na mesma coluna.
+  - Indicar a origem:
+      ?uri tuning:originatesIndSpec ?dml .
+  - Registrar que foi gerado por esta regra:
+      ?uri tuning:isGeneratedBy tuning:RuleSimplePartialIndex .
+
+Resumo operacional:
+  Para cada predicado atômico em WHERE do tipo "coluna OP valor"
+  (por exemplo, "status = 'OPEN'", "flag = 1"), a ontologia sugere
+  um índice parcial na coluna, com condição de filtro igual ao predicado,
+  e nome "PARTIAL_<COLUNA>_<HASH_DO_PREDICADO>".
+
+
+====================================================================
+Uso esperado pelo LLM
+====================================================================
+
+- Se uma sugestão de índice simples vier de análise de colunas isoladas
+  em WHERE, o LLM pode indicar em "rules_triggered" o identificador:
+    ["RuleHypSimpleIndex"]
+
+- Se a sugestão for de um índice composto em duas colunas usadas juntas
+  no mesmo predicado WHERE, usar:
+    ["RuleHypCompositeIndex"]
+
+- Se a sugestão for de um índice parcial baseado em um predicado específico
+  (ex: status = 'OPEN'), usar:
+    ["RuleSimplePartialIndex"]
+
+- O campo "ontology_notes" no JSON de saída pode explicar, por exemplo:
+  - que índices simples vieram de RuleHypSimpleIndex,
+  - índices compostos vieram de RuleHypCompositeIndex,
+  - índices parciais vieram de RuleSimplePartialIndex,
+  e como isso influenciou a escolha final de sugestões.

@@ -1,0 +1,93 @@
+{
+  "indexes": [
+    {
+      "name": "idx_lineitem_l_orderkey",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "This index supports frequent joins between 'orders' and 'lineitem' on 'o_orderkey' = 'l_orderkey'. This pattern is observed in numerous queries, including Q3, Q4, Q6, Q7, Q8, Q9, Q11, Q17, Q20, and Q22.",
+      "benefits": "Significantly accelerates join performance for a large number of queries by providing rapid lookups into the largest table, 'lineitem'. It will likely change join strategies from hash joins to more efficient nested loop joins with index scans.",
+      "tradeoffs": "Moderate write overhead on the 'lineitem' table, which is the largest table in the schema. Storage cost is acceptable given the high query performance benefit.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_orders_o_custkey",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "This index supports frequent joins between 'customer' and 'orders' on 'c_custkey' = 'o_custkey'. This join is a key access path in queries Q3, Q4, Q6, Q7, Q9, Q12, Q17, and Q21.",
+      "benefits": "Improves performance for many queries by speeding up the lookup of orders for a given customer. This is a fundamental relationship in the schema that is currently unindexed.",
+      "tradeoffs": "Minor write and storage overhead on the 'orders' table. The benefits for the read-heavy analytical workload far outweigh this cost.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_partsupp_ps_partkey_ps_suppkey",
+      "table": "partsupp",
+      "type": "composite",
+      "columns": [
+        "ps_partkey",
+        "ps_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "The 'partsupp' table acts as a junction table between 'part' and 'supplier'. This composite index supports joins on 'ps_partkey' (Q2, Q15, Q19), 'ps_suppkey' (Q8, Q10), or both. It is a standard and highly effective optimization for such tables.",
+      "benefits": "Greatly improves the performance of queries that join through the 'partsupp' table by providing an efficient lookup path. The index can satisfy lookups on 'ps_partkey' and on the combination of both columns.",
+      "tradeoffs": "Write and storage overhead on the 'partsupp' table. This is a necessary cost for making this central join table performant.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_lineitem_l_partkey_l_suppkey",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_partkey",
+        "l_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "This index is justified by several queries that join 'lineitem' to 'part' and 'supplier'. It directly supports the correlated subquery in Q19 which filters on both 'l_partkey' and 'l_suppkey'. As a composite index, it also accelerates joins on 'l_partkey' alone (Q7, Q8, Q13, Q16, Q18).",
+      "benefits": "Provides a highly efficient access path for queries filtering or joining on both 'l_partkey' and 'l_suppkey'. It also serves as a covering index for queries that only need to look up by 'l_partkey', consolidating indexing needs.",
+      "tradeoffs": "Adds write and storage overhead to the 'lineitem' table. The column order is chosen to support the widest range of queries.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_lineitem_l_suppkey",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Supports queries that join 'lineitem' to 'supplier' on 'l_suppkey' (e.g., Q4, Q6, Q7, Q8, Q20). The composite index on '(l_partkey, l_suppkey)' cannot efficiently serve lookups on 'l_suppkey' alone, justifying this separate index.",
+      "benefits": "Accelerates joins that need to find line items for a specific supplier, which is a common pattern in the workload not covered by other proposed indexes.",
+      "tradeoffs": "Additional write and storage overhead on the already heavily-indexed 'lineitem' table. This is justified by the frequency of this access path in the workload.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_orders_o_orderkey_status_f_partial",
+      "table": "orders",
+      "type": "partial",
+      "columns": [
+        "o_orderkey"
+      ],
+      "where": "o_orderstatus = 'F'",
+      "workload_pattern": "Specifically targets query Q20, which filters orders by 'o_orderstatus = 'F'' and then joins to 'lineitem' on 'o_orderkey'. A partial index is much smaller and more efficient than a full index if 'F' status orders are a minority.",
+      "benefits": "Provides a highly targeted and efficient optimization for Q20, reducing the number of rows the query needs to consider from the 'orders' table at a very low cost.",
+      "tradeoffs": "This index is only useful for queries with the exact predicate 'o_orderstatus = 'F''. The maintenance cost is very low if this status is terminal and rarely updated.",
+      "rules_triggered": []
+    }
+  ],
+  "materialized_views": [],
+  "global_observations": [
+    "The workload is characteristic of a TPC-H (decision support) benchmark, involving complex queries with numerous joins on large tables.",
+    "The primary performance bottleneck appears to be join operations. The existing indexes on date columns are helpful for filtering, but indexes on foreign key columns are critically missing.",
+    "The recommendations focus on adding indexes to foreign key columns ('l_orderkey', 'o_custkey', 'l_partkey', 'l_suppkey') and on the primary key columns of the main junction table ('partsupp').",
+    "The 'lineitem' table is the central fact table and receives the most index suggestions. This is expected, as optimizing access to the largest table yields the greatest performance gains.",
+    "A partial index is suggested for a specific, complex query (Q20) to provide a highly efficient, low-cost optimization."
+  ],
+  "ontology_notes": null
+}

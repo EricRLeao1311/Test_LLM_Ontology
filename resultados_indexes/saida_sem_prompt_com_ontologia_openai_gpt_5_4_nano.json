@@ -1,0 +1,319 @@
+{
+  "indexes": [
+    {
+      "name": "hyp_l_shipdate",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_shipdate"
+      ],
+      "where": null,
+      "workload_pattern": "Filtros por intervalo em consultas (ex.: l_shipdate <= ..., l_shipdate >= ... e < ...), principalmente Q1, Q5, Q14, Q15, Q16, Q19 e Q20.",
+      "benefits": "Reduz leituras/varreduras em lineitem ao acelerar seleção por janela de datas (TPC-H tende a filtrar por datas).",
+      "tradeoffs": "Aumenta custo de escrita/armazenamento e pode ter ganho limitado se o plano preferir varredura sequencial."
+    },
+    {
+      "name": "hyp_o_orderdate",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_orderdate"
+      ],
+      "where": null,
+      "workload_pattern": "Filtros por intervalo em orders (ex.: o_orderdate < ..., >= ... e < ...), principalmente Q4, Q9, Q11 e Q22 e subconsultas correlatas.",
+      "benefits": "Acelera recuperação de pedidos por faixa temporal e melhora junções com lineitem/customer.",
+      "tradeoffs": "Overhead de manutenção do índice; ganhos podem diminuir se muitas consultas varrerem um grande percentual de orders."
+    },
+    {
+      "name": "hyp_l_orderkey",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Condições de junção e agregação por chave de ordem (ex.: l_orderkey = o_orderkey, IN/EXISTS), principalmente Q3, Q4, Q9, Q11, Q17, Q20, Q22.",
+      "benefits": "Melhora desempenho de joins e filtros por ordem, reduzindo custo de matching em consultas agregadas por orderkey.",
+      "tradeoffs": "Mais impacto em escrita e espaço; pode haver redundância se o planner já usar outros caminhos eficientes."
+    },
+    {
+      "name": "hyp_l_suppkey",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Junções/filtros por fornecedor via lineitem (ex.: l_suppkey = s_suppkey) e EXISTS/NOT EXISTS, especialmente Q4, Q14, Q19, Q20.",
+      "benefits": "Acelera localizar lineitems por fornecedor e melhora planos de EXISTS/NOT EXISTS envolvendo recebimento/pedido.",
+      "tradeoffs": "Pode não ser ótimo se l_suppkey tiver baixa seletividade relativa."
+    },
+    {
+      "name": "hyp_l_returnflag",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_returnflag"
+      ],
+      "where": null,
+      "workload_pattern": "Filtro por valor específico (ex.: l_returnflag = 'R' em Q9).",
+      "benefits": "Melhora seletividade no filtro e reduz linhas consideradas para agregação.",
+      "tradeoffs": "Benefício pode ser moderado dependendo da distribuição de l_returnflag."
+    },
+    {
+      "name": "hyp_c_custkey",
+      "table": "customer",
+      "type": "simple",
+      "columns": [
+        "c_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Junções por chave do cliente (ex.: c_custkey = o_custkey), especialmente Q3, Q4, Q9, Q12, Q17, Q21.",
+      "benefits": "Acelera joins customer↔orders e melhora desempenho de consultas com filtros por customer.",
+      "tradeoffs": "Pode ser menos efetivo se o planner preferir hash join e o ganho do índice for pequeno dado o tamanho da tabela."
+    },
+    {
+      "name": "hyp_o_custkey",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Junções orders↔customer (ex.: c_custkey = o_custkey) e subconsultas, principalmente Q3, Q4, Q9, Q12, Q17, Q21, Q22.",
+      "benefits": "Melhora localizar pedidos por cliente para acelerar agregações/joins.",
+      "tradeoffs": "Custo de manutenção do índice; ganhos dependem do padrão real de acesso."
+    },
+    {
+      "name": "hyp_l_commitdate",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_commitdate"
+      ],
+      "where": null,
+      "workload_pattern": "Condições envolvendo commitdate (ex.: l_commitdate < l_receiptdate em Q11 e Q20) e uso em comparações correlatas.",
+      "benefits": "Ajuda o planner a otimizar condições em lineitem relacionadas a commitdate.",
+      "tradeoffs": "Pode ter uso parcial dependendo de como o otimizador trata comparações entre colunas."
+    },
+    {
+      "name": "hyp_l_receiptdate",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_receiptdate"
+      ],
+      "where": null,
+      "workload_pattern": "Filtros e comparações envolvendo recebimento (ex.: l_receiptdate >= ... e < ... em Q11; l_receiptdate > l_commitdate em Q20).",
+      "benefits": "Melhora seleção por janela de recebimento e acelera checagens EXISTS/NOT EXISTS relacionadas.",
+      "tradeoffs": "Pode ter ganho limitado se a consulta exigir agregações sem filtrar fortemente por receiptdate."
+    },
+    {
+      "name": "hyp_o_orderstatus",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_orderstatus"
+      ],
+      "where": null,
+      "workload_pattern": "Filtro por status (ex.: o_orderstatus = 'F' em Q20).",
+      "benefits": "Aumenta seletividade para reduzir ordens candidatas antes de joins com lineitem.",
+      "tradeoffs": "Se o status tiver alta frequência, o benefício pode ser pequeno."
+    },
+    {
+      "name": "hyp_o_orderkey",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Junções por orderkey e uso em IN/EXISTS (ex.: o_orderkey = l_orderkey, Q3, Q9, Q11, Q17, Q20, Q22).",
+      "benefits": "Pode acelerar joins e subconsultas que dependem de correspondência por orderkey.",
+      "tradeoffs": "Overhead de índice; ganhos dependem do plano e cardinalidade."
+    },
+    {
+      "name": "hyp_p_partkey",
+      "table": "part",
+      "type": "simple",
+      "columns": [
+        "p_partkey"
+      ],
+      "where": null,
+      "workload_pattern": "Junções part↔lineitem/partsupp (ex.: p_partkey = l_partkey e p_partkey = ps_partkey), em Q2, Q8, Q10, Q13, Q15, Q16, Q18, Q19.",
+      "benefits": "Acelera matches por chave de part, ajudando joins com filtros adicionais em part.",
+      "tradeoffs": "part é pequena (2000 linhas); ganhos podem ser moderados."
+    },
+    {
+      "name": "hyp_p_type",
+      "table": "part",
+      "type": "simple",
+      "columns": [
+        "p_type"
+      ],
+      "where": null,
+      "workload_pattern": "Predicados textuais em part (ex.: p_type LIKE '%ECONOMY ANODIZED STEEL...' em Q2; filtros de promo/small em Q13/Q15).",
+      "benefits": "Pode ajudar filtragem quando o otimizador consegue usar o índice.",
+      "tradeoffs": "LIKE com curingas no início (p.ex. '%...') pode dificultar uso efetivo do índice B-Tree."
+    },
+    {
+      "name": "hyp_p_name",
+      "table": "part",
+      "type": "simple",
+      "columns": [
+        "p_name"
+      ],
+      "where": null,
+      "workload_pattern": "Filtro por nome com LIKE (ex.: p_name LIKE '%pale%' em Q8; p_name LIKE '%cornsilk%' em Q19).",
+      "benefits": "Ajuda a reduzir universe de parts em subconsultas e joins com partsupp/lineitem.",
+      "tradeoffs": "Como o padrão começa com '%', o benefício de um B-Tree pode ser limitado."
+    },
+    {
+      "name": "hyp_s_nationkey",
+      "table": "supplier",
+      "type": "simple",
+      "columns": [
+        "s_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "Junções supplier↔nation e filtros por país/região via nation/region, em Q2, Q4, Q6, Q7, Q8, Q10, Q19, Q20.",
+      "benefits": "Melhora joins por nação ao filtrar fornecedores antes de conectá-los com lineitem/partsupp.",
+      "tradeoffs": "Benefício pode ser moderado se a seletividade por nação for baixa."
+    },
+    {
+      "name": "hyp_n_nationkey",
+      "table": "nation",
+      "type": "simple",
+      "columns": [
+        "n_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "Junções por nationkey (ex.: s_nationkey = n_nationkey e c_nationkey = n_nationkey) em várias queries.",
+      "benefits": "Ajuda a manter planos consistentes para joins envolvendo nation.",
+      "tradeoffs": "nation é muito pequena (25 linhas); ganhos podem ser marginais."
+    },
+    {
+      "name": "hyp_ps_partkey",
+      "table": "partsupp",
+      "type": "simple",
+      "columns": [
+        "ps_partkey"
+      ],
+      "where": null,
+      "workload_pattern": "Junções partsupp↔part e agregações/condições por part, Q8, Q10, Q15 e Q19.",
+      "benefits": "Acelera localizar supplier availability por part em subconsultas e cálculos de lucro/valor.",
+      "tradeoffs": "Overhead de índice; benefício depende do plano conseguir explorar o índice em joins."
+    },
+    {
+      "name": "hyp_ps_supplycost",
+      "table": "partsupp",
+      "type": "simple",
+      "columns": [
+        "ps_supplycost"
+      ],
+      "where": null,
+      "workload_pattern": "Uso em MIN/SUM condicionados por cost (ex.: MIN(ps_supplycost) em Q2; ps_supplycost * ps_availqty em Q10).",
+      "benefits": "Pode reduzir custo de subconsulta MIN e ajudar em agregações condicionadas.",
+      "tradeoffs": "Índice em custo pode ser pouco decisivo se a consulta precisar considerar muitos valores sem filtros adicionais seletivos."
+    },
+    {
+      "name": "hyp_ps_availqty",
+      "table": "partsupp",
+      "type": "simple",
+      "columns": [
+        "ps_availqty"
+      ],
+      "where": null,
+      "workload_pattern": "Uso em agregações e condições correlatas (ex.: SUM(ps_supplycost * ps_availqty) em Q10; comparações em Q19).",
+      "benefits": "Ajuda operações dependentes de availqty e pode facilitar estratégias de execução em subconsultas.",
+      "tradeoffs": "Pode ter benefício limitado se a consulta sempre fizer agregação pesada sem filtragem por availqty."
+    },
+    {
+      "name": "hyp_l_partkey",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_partkey"
+      ],
+      "where": null,
+      "workload_pattern": "Junções e filtros por part em lineitem (ex.: l_partkey para relacionar com part em Q8, Q13, Q16, Q18, Q19).",
+      "benefits": "Acelera joins lineitem↔part para calcular receitas/lucros com filtros aplicados em part.",
+      "tradeoffs": "Mais índice para manter; ganhos dependem do quanto o filtro em part é seletivo."
+    },
+    {
+      "name": "hyp_l_shipinstruct",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_shipinstruct"
+      ],
+      "where": null,
+      "workload_pattern": "Filtro por instrução em Q18 (l_shipinstruct = 'TAKE BACK RETURN'/'DELIVER IN PERSON'/'NONE').",
+      "benefits": "Melhora seletividade ao reduzir lineitems para combinações com múltiplos predicados discretos.",
+      "tradeoffs": "Se valores tiverem distribuição ampla, o índice pode ter ganho limitado."
+    },
+    {
+      "name": "hyp_l_shipmode",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_shipmode"
+      ],
+      "where": null,
+      "workload_pattern": "Filtro por shipmode em Q18 (l_shipmode IN ('AIR', 'AIR') e outras alternativas do conjunto).",
+      "benefits": "Acelera seleção de subconjuntos quando a consulta agrega apenas por conjuntos específicos de shipmode.",
+      "tradeoffs": "Uso pode ser parcial em IN; benefício depende de seletividade."
+    },
+    {
+      "name": "hyp_l_quantity",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_quantity"
+      ],
+      "where": null,
+      "workload_pattern": "Filtros numéricos em lineitem (ex.: l_quantity < 21 em Q5; faixas em Q18).",
+      "benefits": "Melhora filtros por faixa numérica e reduz cardinalidade antes de agregação.",
+      "tradeoffs": "Faixas podem ser pouco seletivas; custo extra de manutenção."
+    },
+    {
+      "name": "hyp_l_discount",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_discount"
+      ],
+      "where": null,
+      "workload_pattern": "Filtro de intervalo em lineitem (ex.: l_discount BETWEEN -0.95 AND 1.02 em Q5).",
+      "benefits": "Apoia filtragem por desconto quando a condição é seletiva.",
+      "tradeoffs": "Benefício depende de distribuição e do plano escolhido."
+    },
+    {
+      "name": "partial_l_returnflag_r_aa1b2c3d",
+      "table": "lineitem",
+      "type": "partial",
+      "columns": [
+        "l_returnflag"
+      ],
+      "where": "l_returnflag = 'R'",
+      "workload_pattern": "Q9 filtra diretamente l_returnflag = 'R' e faz GROUP BY/ORDER BY por receita.",
+      "benefits": "Índice menor e mais seletivo: favorece buscas/varreduras apenas das linhas com returnflag 'R'.",
+      "tradeoffs": "Só beneficia consultas que usem exatamente esse predicado."
+    },
+    {
+      "name": "partial_o_orderstatus_f_f0c2d9a1",
+      "table": "orders",
+      "type": "partial",
+      "columns": [
+        "o_orderstatus"
+      ],
+      "where": "o_orderstatus = 'F'",
+      "workload_pattern": "Q20 usa o_orderstatus = 'F' antes de checar condições com lineitem (EXISTS/NOT EXISTS).",
+      "benefits": "Reduz o conjunto de ordens candidatas para o status relevante, melhorando joins subsequentes.",
+      "tradeoffs": "Só ajuda quando a consulta filtra por esse mesmo status."
+    }
+  ],
+  "materialized_views": [],
+  "global_observations": [],
+  "ontology_notes": null
+}

@@ -1,0 +1,74 @@
+{
+  "indexes": [
+    {
+      "name": "idx_lineitem_shipdate_l_orderkey",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_shipdate",
+        "l_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q3, Q5, Q6, Q7, Q9, Q11, Q13, Q14, Q18, Q19 include predicates on lineitem.l_shipdate and lineitem joins to orders via lineitem.l_orderkey = orders.o_orderkey.",
+      "benefits": "Supports efficient range filtering on l_shipdate while also accelerating subsequent lookups/probing by l_orderkey for the join to orders.",
+      "tradeoffs": "Extra write overhead and larger index than a single-column l_shipdate index.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_orders_custkey_orderdate",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_custkey",
+        "o_orderdate"
+      ],
+      "where": null,
+      "workload_pattern": "Q3 joins customer->orders on customer.c_custkey = orders.o_custkey and filters orders by orders.o_orderdate. Q9 filters orders by o_orderdate range and joins via o_custkey.",
+      "benefits": "Speeds up finding orders for a given customer within specific order-date ranges.",
+      "tradeoffs": "Additional write overhead; may be less beneficial if queries filter only by orderdate (already covered by existing orders(o_orderdate)).",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_lineitem_shipdate_discount_quantity",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_shipdate",
+        "l_discount",
+        "l_quantity"
+      ],
+      "where": null,
+      "workload_pattern": "Q5 filters lineitem by l_shipdate range and also applies l_discount BETWEEN -0.95 AND 1.02 and l_quantity < 21.",
+      "benefits": "Improves selectivity for Q5 by combining the date range with the discount and quantity predicates, reducing rows scanned/aggregated.",
+      "tradeoffs": "Larger index and more maintenance overhead; may provide diminishing returns if the selectivity of predicates is already high.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_lineitem_shipdate_partial_q1",
+      "table": "lineitem",
+      "type": "partial",
+      "columns": [
+        "l_shipdate"
+      ],
+      "where": "l_shipdate <= date '1995-02-13' - interval '90 days'",
+      "workload_pattern": "Q1 repeatedly applies l_shipdate <= date('1995-02-13','-90 days') for the main aggregation filter.",
+      "benefits": "Smaller, more selective index for the dominant upper-bound predicate in Q1.",
+      "tradeoffs": "Partial index is only useful when the query predicate matches the same logical condition; additional write overhead.",
+      "rules_triggered": [
+        "RuleSimplePartialIndex"
+      ]
+    }
+  ],
+  "materialized_views": [],
+  "global_observations": [
+    "Kept only PostgreSQL-valid index types and removed suggestions that were either inconsistent with the provided metadata/workload or redundant with existing indexes.",
+    "Focused suggestions on lineitem date-range filtering combined with join/filter columns, plus one partial index for Q1's explicit l_shipdate upper-bound."
+  ],
+  "ontology_notes": "Adjusted index suggestions to be PostgreSQL-consistent: removed the orders(o_orderstatus,o_orderdate) suggestion (insufficient direct predicate evidence from the given workload and potentially redundant with existing o_orderdate indexing). Replaced the invalid/overly speculative partial index predicate expression with a valid PostgreSQL WHERE expression for the Q1 l_shipdate upper-bound. Expanded the l_shipdate+discount+quantity composite to better match Q5’s combined filtering predicates and maintained correct rules_triggered usage."
+}

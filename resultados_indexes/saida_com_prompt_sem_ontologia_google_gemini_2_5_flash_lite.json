@@ -1,0 +1,589 @@
+{
+  "indexes": [
+    {
+      "name": "idx_lineitem_shipdate_filtered",
+      "table": "lineitem",
+      "type": "partial",
+      "columns": [
+        "l_shipdate"
+      ],
+      "where": "l_shipdate <= DATE '1995-02-13' - 90",
+      "workload_pattern": "Q1 filters lineitem on l_shipdate. This index can speed up that specific filter.",
+      "benefits": "Faster filtering for Q1.",
+      "tradeoffs": "Slight write overhead on lineitem. Index size depends on the selectivity of the WHERE clause.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_orders_custkey_orderdate",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_custkey",
+        "o_orderdate"
+      ],
+      "where": null,
+      "workload_pattern": "Q3 filters orders on o_custkey and o_orderdate. This composite index can support this filter.",
+      "benefits": "Faster filtering and potentially sorting for Q3.",
+      "tradeoffs": "Write overhead on orders. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_lineitem_orderkey_discount",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_discount"
+      ],
+      "where": null,
+      "workload_pattern": "Q3 groups by l_orderkey and calculates revenue using l_discount. This index can help with grouping and calculation.",
+      "benefits": "Faster aggregation and calculation for Q3.",
+      "tradeoffs": "Write overhead on lineitem. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_customer_mktsegment_custkey",
+      "table": "customer",
+      "type": "composite",
+      "columns": [
+        "c_mktsegment",
+        "c_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q3 filters customer on c_mktsegment and joins with orders on c_custkey. This index supports the filter and join.",
+      "benefits": "Faster filtering and join for Q3.",
+      "tradeoffs": "Write overhead on customer. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_orders_orderdate_custkey",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_orderdate",
+        "o_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q4 filters orders on o_orderdate and joins with customer on o_custkey. This index supports the filter and join.",
+      "benefits": "Faster filtering and join for Q4.",
+      "tradeoffs": "Write overhead on orders. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_lineitem_shipdate_discount_quantity",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_shipdate",
+        "l_discount",
+        "l_quantity"
+      ],
+      "where": null,
+      "workload_pattern": "Q5 filters lineitem on l_shipdate, l_discount, and l_quantity. This composite index can efficiently support these filters.",
+      "benefits": "Faster filtering for Q5.",
+      "tradeoffs": "Write overhead on lineitem. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_orders_orderkey_orderpriority",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_orderkey",
+        "o_orderpriority"
+      ],
+      "where": null,
+      "workload_pattern": "Q11 joins orders and lineitem on o_orderkey and filters on o_orderpriority. This index can speed up the join and filter.",
+      "benefits": "Faster join and filtering for Q11.",
+      "tradeoffs": "Write overhead on orders. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_lineitem_orderkey_commitdate_receiptdate",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_commitdate",
+        "l_receiptdate"
+      ],
+      "where": null,
+      "workload_pattern": "Q11 filters lineitem on l_orderkey, l_commitdate, and l_receiptdate. This index can support these filters and the join with orders.",
+      "benefits": "Faster filtering and join for Q11.",
+      "tradeoffs": "Write overhead on lineitem. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_customer_custkey_phone",
+      "table": "customer",
+      "type": "composite",
+      "columns": [
+        "c_custkey",
+        "c_phone"
+      ],
+      "where": null,
+      "workload_pattern": "Q22 uses a subquery on customer to filter by phone prefix and then joins with orders. This index can help with the subquery and potential joins.",
+      "benefits": "Faster filtering and potential join support for Q22.",
+      "tradeoffs": "Write overhead on customer. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_part_type_size_brand",
+      "table": "part",
+      "type": "composite",
+      "columns": [
+        "p_type",
+        "p_size",
+        "p_brand"
+      ],
+      "where": null,
+      "workload_pattern": "Q16 filters part on p_type, p_size, and p_brand. This composite index can efficiently support these filters.",
+      "benefits": "Faster filtering for Q16.",
+      "tradeoffs": "Write overhead on part. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_partsupp_partkey_suppkey",
+      "table": "partsupp",
+      "type": "composite",
+      "columns": [
+        "ps_partkey",
+        "ps_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q2, Q8, Q10, Q16, Q19, Q20, Q21 involve joins with partsupp on ps_partkey and ps_suppkey. This composite index can accelerate these joins.",
+      "benefits": "Faster joins for multiple queries.",
+      "tradeoffs": "Write overhead on partsupp. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_supplier_suppkey_nationkey",
+      "table": "supplier",
+      "type": "composite",
+      "columns": [
+        "s_suppkey",
+        "s_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q2, Q4, Q6, Q7, Q8, Q10, Q19, Q20, Q21 join supplier with other tables on s_suppkey and s_nationkey. This composite index can accelerate these joins.",
+      "benefits": "Faster joins for multiple queries.",
+      "tradeoffs": "Write overhead on supplier. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_nation_nationkey_regionkey",
+      "table": "nation",
+      "type": "composite",
+      "columns": [
+        "n_nationkey",
+        "n_regionkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q2, Q4, Q6, Q7, Q8, Q10, Q20 join nation with other tables on n_nationkey and n_regionkey. This composite index can accelerate these joins.",
+      "benefits": "Faster joins for multiple queries.",
+      "tradeoffs": "Write overhead on nation. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_region_regionkey_name",
+      "table": "region",
+      "type": "composite",
+      "columns": [
+        "r_regionkey",
+        "r_name"
+      ],
+      "where": null,
+      "workload_pattern": "Q2, Q4, Q7 filter region on r_name and join on r_regionkey. This index can support these filters and joins.",
+      "benefits": "Faster filtering and joins for Q2, Q4, Q7.",
+      "tradeoffs": "Write overhead on region. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_part_partkey_type_brand_size",
+      "table": "part",
+      "type": "composite",
+      "columns": [
+        "p_partkey",
+        "p_type",
+        "p_brand",
+        "p_size"
+      ],
+      "where": null,
+      "workload_pattern": "Q2, Q8, Q16, Q17, Q18, Q19, Q20 involve filtering and joining on part columns like p_partkey, p_type, p_brand, p_size. This composite index can accelerate these operations.",
+      "benefits": "Faster joins and filters for multiple queries.",
+      "tradeoffs": "Write overhead on part. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_lineitem_partkey_suppkey_orderkey",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_partkey",
+        "l_suppkey",
+        "l_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q2, Q8, Q19, Q20, Q21 join lineitem with part, supplier, orders, partsupp on l_partkey, l_suppkey, l_orderkey. This composite index can accelerate these joins.",
+      "benefits": "Faster joins for multiple queries.",
+      "tradeoffs": "Write overhead on lineitem. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_orders_custkey_orderdate_orderstatus",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_custkey",
+        "o_orderdate",
+        "o_orderstatus"
+      ],
+      "where": null,
+      "workload_pattern": "Q3 filters orders on o_custkey and o_orderdate, and Q9 filters on o_orderdate. Q22 filters on o_orderdate and checks for existence of lineitems. This index can support these filters and joins.",
+      "benefits": "Faster filtering and joins for Q3, Q9, Q22.",
+      "tradeoffs": "Write overhead on orders. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_customer_custkey_nationkey",
+      "table": "customer",
+      "type": "composite",
+      "columns": [
+        "c_custkey",
+        "c_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q3, Q4, Q7, Q9, Q12, Q13, Q18, Q22 join customer with other tables on c_custkey and c_nationkey. This composite index can accelerate these joins.",
+      "benefits": "Faster joins for multiple queries.",
+      "tradeoffs": "Write overhead on customer. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_lineitem_orderkey_returnflag_linestatus",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_returnflag",
+        "l_linestatus"
+      ],
+      "where": null,
+      "workload_pattern": "Q1 groups by l_returnflag and l_linestatus and uses l_orderkey for joins. This index can support the grouping and joins.",
+      "benefits": "Faster grouping and joins for Q1.",
+      "tradeoffs": "Write overhead on lineitem. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_orders_orderkey_orderdate_orderpriority",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_orderkey",
+        "o_orderdate",
+        "o_orderpriority"
+      ],
+      "where": null,
+      "workload_pattern": "Q11 filters on o_orderkey and o_orderpriority. Q3 and Q6 also use o_orderkey and o_orderdate. This index can support these filters and joins.",
+      "benefits": "Faster filtering and joins for Q3, Q6, Q11.",
+      "tradeoffs": "Write overhead on orders. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_lineitem_orderkey_shipdate_discount",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_shipdate",
+        "l_discount"
+      ],
+      "where": null,
+      "workload_pattern": "Q3 filters lineitem on l_orderkey and l_shipdate, and calculates revenue using l_discount. This index can support these operations.",
+      "benefits": "Faster filtering and calculation for Q3.",
+      "tradeoffs": "Write overhead on lineitem. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_part_p_partkey",
+      "table": "part",
+      "type": "simple",
+      "columns": [
+        "p_partkey"
+      ],
+      "where": null,
+      "workload_pattern": "Many queries (Q2, Q8, Q16, Q17, Q18, Q19, Q20) join with the part table on p_partkey. This index will accelerate these joins.",
+      "benefits": "Faster joins for multiple queries involving the part table.",
+      "tradeoffs": "Write overhead on part. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_supplier_s_suppkey",
+      "table": "supplier",
+      "type": "simple",
+      "columns": [
+        "s_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Many queries (Q2, Q4, Q6, Q7, Q8, Q10, Q19, Q20, Q21) join with the supplier table on s_suppkey. This index will accelerate these joins.",
+      "benefits": "Faster joins for multiple queries involving the supplier table.",
+      "tradeoffs": "Write overhead on supplier. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_customer_c_custkey",
+      "table": "customer",
+      "type": "simple",
+      "columns": [
+        "c_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Many queries (Q3, Q4, Q7, Q9, Q12, Q13, Q18, Q22) join with the customer table on c_custkey. This index will accelerate these joins.",
+      "benefits": "Faster joins for multiple queries involving the customer table.",
+      "tradeoffs": "Write overhead on customer. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_orders_o_orderkey",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Many queries (Q3, Q6, Q11, Q12, Q13, Q17, Q18, Q22) join with the orders table on o_orderkey. This index will accelerate these joins.",
+      "benefits": "Faster joins for multiple queries involving the orders table.",
+      "tradeoffs": "Write overhead on orders. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_lineitem_l_orderkey",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Many queries (Q1, Q3, Q4, Q5, Q6, Q7, Q8, Q9, Q11, Q13, Q14, Q17, Q18, Q19, Q20, Q21, Q22) join with the lineitem table on l_orderkey. This index will accelerate these joins.",
+      "benefits": "Faster joins for multiple queries involving the lineitem table.",
+      "tradeoffs": "Write overhead on lineitem. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_partsupp_ps_partkey",
+      "table": "partsupp",
+      "type": "simple",
+      "columns": [
+        "ps_partkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q2, Q8, Q10, Q16, Q19, Q20 join with partsupp on ps_partkey. This index will accelerate these joins.",
+      "benefits": "Faster joins for multiple queries involving the partsupp table.",
+      "tradeoffs": "Write overhead on partsupp. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_nation_n_nationkey",
+      "table": "nation",
+      "type": "simple",
+      "columns": [
+        "n_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "Many queries (Q2, Q4, Q6, Q7, Q8, Q10, Q20, Q21) join with the nation table on n_nationkey. This index will accelerate these joins.",
+      "benefits": "Faster joins for multiple queries involving the nation table.",
+      "tradeoffs": "Write overhead on nation. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_orders_o_custkey",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q3, Q4, Q7, Q9, Q12, Q13, Q18, Q22 join orders with customer on o_custkey. This index will accelerate these joins.",
+      "benefits": "Faster joins for multiple queries involving the orders table and customer.",
+      "tradeoffs": "Write overhead on orders. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_lineitem_l_suppkey",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q2, Q4, Q6, Q7, Q8, Q10, Q19, Q20, Q21 join lineitem with supplier on l_suppkey. This index will accelerate these joins.",
+      "benefits": "Faster joins for multiple queries involving the lineitem table and supplier.",
+      "tradeoffs": "Write overhead on lineitem. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_partsupp_ps_suppkey",
+      "table": "partsupp",
+      "type": "simple",
+      "columns": [
+        "ps_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q2, Q8, Q10, Q16, Q19, Q20 join partsupp with supplier on ps_suppkey. This index will accelerate these joins.",
+      "benefits": "Faster joins for multiple queries involving the partsupp table and supplier.",
+      "tradeoffs": "Write overhead on partsupp. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_customer_c_mktsegment",
+      "table": "customer",
+      "type": "simple",
+      "columns": [
+        "c_mktsegment"
+      ],
+      "where": null,
+      "workload_pattern": "Q3 filters customer on c_mktsegment. This index can speed up this filter.",
+      "benefits": "Faster filtering for Q3.",
+      "tradeoffs": "Write overhead on customer. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_part_p_type",
+      "table": "part",
+      "type": "simple",
+      "columns": [
+        "p_type"
+      ],
+      "where": null,
+      "workload_pattern": "Q2 filters part on p_type. This index can speed up this filter.",
+      "benefits": "Faster filtering for Q2.",
+      "tradeoffs": "Write overhead on part. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_part_p_size",
+      "table": "part",
+      "type": "simple",
+      "columns": [
+        "p_size"
+      ],
+      "where": null,
+      "workload_pattern": "Q2 filters part on p_size. This index can speed up this filter.",
+      "benefits": "Faster filtering for Q2.",
+      "tradeoffs": "Write overhead on part. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_part_p_brand",
+      "table": "part",
+      "type": "simple",
+      "columns": [
+        "p_brand"
+      ],
+      "where": null,
+      "workload_pattern": "Q16, Q17, Q18 filter part on p_brand. This index can speed up these filters.",
+      "benefits": "Faster filtering for Q16, Q17, Q18.",
+      "tradeoffs": "Write overhead on part. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_part_p_container",
+      "table": "part",
+      "type": "simple",
+      "columns": [
+        "p_container"
+      ],
+      "where": null,
+      "workload_pattern": "Q18 filters part on p_container. This index can speed up this filter.",
+      "benefits": "Faster filtering for Q18.",
+      "tradeoffs": "Write overhead on part. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_lineitem_l_returnflag",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_returnflag"
+      ],
+      "where": null,
+      "workload_pattern": "Q1 groups by l_returnflag. This index can help with the grouping.",
+      "benefits": "Faster grouping for Q1.",
+      "tradeoffs": "Write overhead on lineitem. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_lineitem_l_linestatus",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_linestatus"
+      ],
+      "where": null,
+      "workload_pattern": "Q1 groups by l_linestatus. This index can help with the grouping.",
+      "benefits": "Faster grouping for Q1.",
+      "tradeoffs": "Write overhead on lineitem. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_orders_o_orderpriority",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_orderpriority"
+      ],
+      "where": null,
+      "workload_pattern": "Q11 filters orders on o_orderpriority. Q22 filters on o_orderpriority. This index can speed up these filters.",
+      "benefits": "Faster filtering for Q11, Q22.",
+      "tradeoffs": "Write overhead on orders. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_lineitem_l_shipdate",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_shipdate"
+      ],
+      "where": null,
+      "workload_pattern": "Q1, Q5, Q6, Q11, Q13, Q14, Q19, Q20 filter lineitem on l_shipdate. This index can speed up these filters.",
+      "benefits": "Faster filtering for multiple queries.",
+      "tradeoffs": "Write overhead on lineitem. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_orders_o_orderdate",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_orderdate"
+      ],
+      "where": null,
+      "workload_pattern": "Q3, Q4, Q7, Q9, Q22 filter orders on o_orderdate. This index can speed up these filters.",
+      "benefits": "Faster filtering for multiple queries.",
+      "tradeoffs": "Write overhead on orders. Increased storage.",
+      "rules_triggered": []
+    },
+    {
+      "name": "idx_customer_c_phone_prefix",
+      "table": "customer",
+      "type": "partial",
+      "columns": [
+        "c_phone"
+      ],
+      "where": "substr(c_phone, 1, 2) IN ('32', '11', '29', '25', '22', '15', '12')",
+      "workload_pattern": "Q22 filters customer based on the prefix of c_phone. This partial index can speed up this specific filter.",
+      "benefits": "Faster filtering for Q22.",
+      "tradeoffs": "Slight write overhead on customer. Index size depends on the selectivity of the WHERE clause.",
+      "rules_triggered": []
+    }
+  ],
+  "materialized_views": [],
+  "global_observations": [
+    "The workload consists of many TPC-H queries, which are known to be join-heavy and filter-intensive.",
+    "Many queries filter or join on date columns. While some date filters are specific, a general index on date columns might be beneficial if selectivity is high.",
+    "Composite indexes are frequently suggested due to multiple columns being used in WHERE clauses and JOIN conditions.",
+    "Simple indexes on primary key columns are generally beneficial for join performance, and many such indexes are suggested.",
+    "Partial indexes are suggested for queries with highly selective WHERE clauses on specific columns, to reduce index size and maintenance overhead."
+  ],
+  "ontology_notes": null
+}

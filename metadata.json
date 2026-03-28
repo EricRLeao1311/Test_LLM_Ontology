@@ -1,0 +1,497 @@
+{
+  "dbms": "postgresql",
+  "schema_name": "main",
+  "source": "auto-introspected",
+  "tables": [
+    {
+      "name": "customer",
+      "row_count": 1500,
+      "columns": [
+        {
+          "name": "c_custkey",
+          "type": "INTEGER"
+        },
+        {
+          "name": "c_name",
+          "type": "TEXT"
+        },
+        {
+          "name": "c_address",
+          "type": "TEXT"
+        },
+        {
+          "name": "c_nationkey",
+          "type": "INTEGER"
+        },
+        {
+          "name": "c_phone",
+          "type": "TEXT"
+        },
+        {
+          "name": "c_acctbal",
+          "type": "REAL"
+        },
+        {
+          "name": "c_mktsegment",
+          "type": "TEXT"
+        },
+        {
+          "name": "c_comment",
+          "type": "TEXT"
+        }
+      ],
+      "indexes_existing": []
+    },
+    {
+      "name": "lineitem",
+      "row_count": 60144,
+      "columns": [
+        {
+          "name": "l_orderkey",
+          "type": "INTEGER"
+        },
+        {
+          "name": "l_partkey",
+          "type": "INTEGER"
+        },
+        {
+          "name": "l_suppkey",
+          "type": "INTEGER"
+        },
+        {
+          "name": "l_linenumber",
+          "type": "INTEGER"
+        },
+        {
+          "name": "l_quantity",
+          "type": "INTEGER"
+        },
+        {
+          "name": "l_extendedprice",
+          "type": "REAL"
+        },
+        {
+          "name": "l_discount",
+          "type": "REAL"
+        },
+        {
+          "name": "l_tax",
+          "type": "REAL"
+        },
+        {
+          "name": "l_returnflag",
+          "type": "TEXT"
+        },
+        {
+          "name": "l_linestatus",
+          "type": "TEXT"
+        },
+        {
+          "name": "l_shipdate",
+          "type": "TEXT"
+        },
+        {
+          "name": "l_commitdate",
+          "type": "TEXT"
+        },
+        {
+          "name": "l_receiptdate",
+          "type": "TEXT"
+        },
+        {
+          "name": "l_shipinstruct",
+          "type": "TEXT"
+        },
+        {
+          "name": "l_shipmode",
+          "type": "TEXT"
+        },
+        {
+          "name": "l_comment",
+          "type": "TEXT"
+        }
+      ],
+      "indexes_existing": [
+        {
+          "name": "idx_LINEITEM_1",
+          "columns": [
+            "l_shipdate"
+          ],
+          "unique": false
+        }
+      ]
+    },
+    {
+      "name": "nation",
+      "row_count": 25,
+      "columns": [
+        {
+          "name": "n_nationkey",
+          "type": "INTEGER"
+        },
+        {
+          "name": "n_name",
+          "type": "TEXT"
+        },
+        {
+          "name": "n_regionkey",
+          "type": "INTEGER"
+        },
+        {
+          "name": "n_comment",
+          "type": "TEXT"
+        }
+      ],
+      "indexes_existing": []
+    },
+    {
+      "name": "orders",
+      "row_count": 15000,
+      "columns": [
+        {
+          "name": "o_orderkey",
+          "type": "INTEGER"
+        },
+        {
+          "name": "o_custkey",
+          "type": "INTEGER"
+        },
+        {
+          "name": "o_orderstatus",
+          "type": "TEXT"
+        },
+        {
+          "name": "o_totalprice",
+          "type": "REAL"
+        },
+        {
+          "name": "o_orderdate",
+          "type": "TEXT"
+        },
+        {
+          "name": "o_orderpriority",
+          "type": "TEXT"
+        },
+        {
+          "name": "o_clerk",
+          "type": "TEXT"
+        },
+        {
+          "name": "o_shippriority",
+          "type": "INTEGER"
+        },
+        {
+          "name": "o_comment",
+          "type": "TEXT"
+        }
+      ],
+      "indexes_existing": [
+        {
+          "name": "idx_ORDERS_2",
+          "columns": [
+            "o_orderdate"
+          ],
+          "unique": false
+        }
+      ]
+    },
+    {
+      "name": "part",
+      "row_count": 2000,
+      "columns": [
+        {
+          "name": "p_partkey",
+          "type": "INTEGER"
+        },
+        {
+          "name": "p_name",
+          "type": "TEXT"
+        },
+        {
+          "name": "p_mfgr",
+          "type": "TEXT"
+        },
+        {
+          "name": "p_brand",
+          "type": "TEXT"
+        },
+        {
+          "name": "p_type",
+          "type": "TEXT"
+        },
+        {
+          "name": "p_size",
+          "type": "INTEGER"
+        },
+        {
+          "name": "p_container",
+          "type": "TEXT"
+        },
+        {
+          "name": "p_retailprice",
+          "type": "REAL"
+        },
+        {
+          "name": "p_comment",
+          "type": "TEXT"
+        }
+      ],
+      "indexes_existing": [
+        {
+          "name": "idx_PART_7",
+          "columns": [
+            "p_type"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_PART_6",
+          "columns": [
+            "p_size"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_PART_5",
+          "columns": [
+            "p_name"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_PART_4",
+          "columns": [
+            "p_container"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_PART_3",
+          "columns": [
+            "p_brand"
+          ],
+          "unique": false
+        }
+      ]
+    },
+    {
+      "name": "partsupp",
+      "row_count": 8000,
+      "columns": [
+        {
+          "name": "ps_partkey",
+          "type": "INTEGER"
+        },
+        {
+          "name": "ps_suppkey",
+          "type": "INTEGER"
+        },
+        {
+          "name": "ps_availqty",
+          "type": "INTEGER"
+        },
+        {
+          "name": "ps_supplycost",
+          "type": "REAL"
+        },
+        {
+          "name": "ps_comment",
+          "type": "TEXT"
+        }
+      ],
+      "indexes_existing": []
+    },
+    {
+      "name": "region",
+      "row_count": 5,
+      "columns": [
+        {
+          "name": "r_regionkey",
+          "type": "INTEGER"
+        },
+        {
+          "name": "r_name",
+          "type": "TEXT"
+        },
+        {
+          "name": "r_comment",
+          "type": "TEXT"
+        }
+      ],
+      "indexes_existing": []
+    },
+    {
+      "name": "supplier",
+      "row_count": 100,
+      "columns": [
+        {
+          "name": "s_suppkey",
+          "type": "INTEGER"
+        },
+        {
+          "name": "s_name",
+          "type": "TEXT"
+        },
+        {
+          "name": "s_address",
+          "type": "TEXT"
+        },
+        {
+          "name": "s_nationkey",
+          "type": "INTEGER"
+        },
+        {
+          "name": "s_phone",
+          "type": "TEXT"
+        },
+        {
+          "name": "s_acctbal",
+          "type": "REAL"
+        },
+        {
+          "name": "s_comment",
+          "type": "TEXT"
+        }
+      ],
+      "indexes_existing": []
+    }
+  ],
+  "workload": {
+    "description": "TPC-H workload (lista de queries vinda do script de testes)",
+    "time_window": "synthetic",
+    "queries": [
+      {
+        "id": "Q1",
+        "label": "TPC-H Query 1",
+        "frequency_per_hour": 1,
+        "sql": "/* TPC-H Query 1 - Adaptada para SQLite */\nSELECT \n    l_returnflag, \n    l_linestatus, \n    SUM(l_quantity) AS sum_qty, \n    SUM(l_extendedprice) AS sum_base_price, \n    SUM(l_extendedprice * (1 - l_discount)) AS sum_disc_price, \n    SUM(l_extendedprice * (1 - l_discount) * (1 + l_tax)) AS sum_charge, \n    AVG(l_quantity) AS avg_qty, \n    AVG(l_extendedprice) AS avg_price, \n    AVG(l_discount) AS avg_disc, \n    COUNT(*) AS count_order\nFROM \n    lineitem\nWHERE \n    l_shipdate <= date('1995-02-13', '-90 days')\nGROUP BY \n    l_returnflag, \n    l_linestatus\nORDER BY \n    l_returnflag, \n    l_linestatus;"
+      },
+      {
+        "id": "Q2",
+        "label": "TPC-H Query 2",
+        "frequency_per_hour": 1,
+        "sql": "/* TPC-H Query 2 - Adaptada para SQLite */\nSELECT \n    S_ACCTBAL, \n    S_NAME, \n    N_NAME, \n    P_PARTKEY, \n    P_MFGR, \n    S_ADDRESS, \n    S_PHONE, \n    S_COMMENT\nFROM \n    PART, \n    SUPPLIER, \n    PARTSUPP, \n    NATION, \n    REGION\nWHERE \n    P_PARTKEY = PS_PARTKEY \n    AND S_SUPPKEY = PS_SUPPKEY \n    AND P_SIZE = 7 \n    AND P_TYPE LIKE '%ECONOMY ANODIZED STEEL' \n    AND S_NATIONKEY = N_NATIONKEY \n    AND N_REGIONKEY = R_REGIONKEY \n    AND R_NAME = 'EUROPE' \n    AND PS_SUPPLYCOST = (\n        SELECT MIN(PS_SUPPLYCOST) \n        FROM PARTSUPP AS ps2\n        JOIN SUPPLIER AS s2 ON s2.S_SUPPKEY = ps2.PS_SUPPKEY\n        JOIN NATION AS n2 ON s2.S_NATIONKEY = n2.N_NATIONKEY\n        JOIN REGION AS r2 ON n2.N_REGIONKEY = r2.R_REGIONKEY\n        WHERE ps2.PS_PARTKEY = PART.P_PARTKEY\n        AND r2.R_NAME = 'EUROPE'\n    )\nORDER BY \n    S_ACCTBAL DESC, \n    N_NAME, \n    S_NAME, \n    P_PARTKEY\nLIMIT 100;"
+      },
+      {
+        "id": "Q3",
+        "label": "TPC-H Query 3",
+        "frequency_per_hour": 1,
+        "sql": "/* TPC-H Query 3 - Adaptada para SQLite */\nSELECT \n    l_orderkey, \n    SUM(l_extendedprice * (1 - l_discount)) AS revenue, \n    o_orderdate, \n    o_shippriority\nFROM \n    customer, \n    orders, \n    lineitem\nWHERE \n    c_mktsegment = 'HOUSEHOLD' \n    AND c_custkey = o_custkey \n    AND l_orderkey = o_orderkey \n    AND o_orderdate < '1992-07-30' \n    AND l_shipdate > '1998-05-04'\nGROUP BY \n    l_orderkey, \n    o_orderdate, \n    o_shippriority\nORDER BY \n    revenue DESC, \n    o_orderdate\nLIMIT 20;"
+      },
+      {
+        "id": "Q4",
+        "label": "TPC-H Query 4",
+        "frequency_per_hour": 1,
+        "sql": "/* TPC-H Query 5 - Adaptada para SQLite */\nSELECT \n    n_name, \n    SUM(l_extendedprice * (1 - l_discount)) AS revenue\nFROM \n    customer, \n    orders, \n    lineitem, \n    supplier, \n    nation, \n    region\nWHERE \n    c_custkey = o_custkey \n    AND l_orderkey = o_orderkey \n    AND l_suppkey = s_suppkey \n    AND c_nationkey = s_nationkey \n    AND s_nationkey = n_nationkey \n    AND n_regionkey = r_regionkey \n    AND r_name = 'ASIA' \n    AND o_orderdate >= '1996-05-31' \n    AND o_orderdate < date('1996-05-31', '+1 year')\nGROUP BY \n    n_name\nORDER BY \n    revenue DESC;"
+      },
+      {
+        "id": "Q5",
+        "label": "TPC-H Query 5",
+        "frequency_per_hour": 1,
+        "sql": "/* TPC-H Query 6 - Adaptada para SQLite */\nSELECT \n    SUM(l_extendedprice * l_discount) AS revenue\nFROM \n    lineitem\nWHERE \n    l_shipdate >= '1997-06-11' \n    AND l_shipdate < date('1997-06-11', '+1 year')\n    AND l_discount BETWEEN -0.95 AND 1.02\n    AND l_quantity < 21;"
+      },
+      {
+        "id": "Q6",
+        "label": "TPC-H Query 6",
+        "frequency_per_hour": 1,
+        "sql": "/* TPC-H Query 7 - Adaptada para SQLite */\nSELECT \n    NA_N_NAME, \n    NB_N_NAME, \n    L_YEAR, \n    SUM(VOLUME) AS REVENUE\nFROM \n    (\n        SELECT \n            NA.N_NAME AS NA_N_NAME, \n            NB.N_NAME AS NB_N_NAME, \n            strftime('%Y', L_SHIPDATE) AS L_YEAR, \n            L_EXTENDEDPRICE * (1 - L_DISCOUNT) AS VOLUME\n        FROM \n            SUPPLIER, \n            LINEITEM, \n            ORDERS, \n            CUSTOMER, \n            NATION NA, \n            NATION NB\n        WHERE \n            S_SUPPKEY = L_SUPPKEY \n            AND O_ORDERKEY = L_ORDERKEY \n            AND C_CUSTKEY = O_CUSTKEY \n            AND S_NATIONKEY = NA.N_NATIONKEY \n            AND C_NATIONKEY = NB.N_NATIONKEY \n            AND (\n                (NA.N_NAME = 'EUROPE' AND NB.N_NAME = 'UNITED STATES') \n                OR (NA.N_NAME = 'UNITED STATES' AND NB.N_NAME = 'EUROPE')\n            ) \n            AND L_SHIPDATE BETWEEN '1992-05-09' AND date('1992-05-09', '+1 year')\n    ) AS SHIPPING\nGROUP BY \n    NA_N_NAME, \n    NB_N_NAME, \n    L_YEAR\nORDER BY \n    NA_N_NAME, \n    NB_N_NAME, \n    L_YEAR;"
+      },
+      {
+        "id": "Q7",
+        "label": "TPC-H Query 7",
+        "frequency_per_hour": 1,
+        "sql": "/* TPC-H Query 8 - Adaptada para SQLite */\nSELECT \n    O_YEAR, \n    SUM(CASE WHEN NB_N_NAME = 'BRAZIL' THEN VOLUME ELSE 0 END) / SUM(VOLUME) AS MKT_SHARE\nFROM \n    (\n        SELECT \n            strftime('%Y', O_ORDERDATE) AS O_YEAR, \n            L_EXTENDEDPRICE * (1 - L_DISCOUNT) AS VOLUME, \n            NB.N_NAME AS NB_N_NAME\n        FROM \n            PART, \n            SUPPLIER, \n            LINEITEM, \n            ORDERS, \n            CUSTOMER, \n            NATION NA, \n            NATION NB, \n            REGION\n        WHERE \n            P_PARTKEY = L_PARTKEY \n            AND S_SUPPKEY = L_SUPPKEY \n            AND L_ORDERKEY = O_ORDERKEY \n            AND O_CUSTKEY = C_CUSTKEY \n            AND C_NATIONKEY = NA.N_NATIONKEY \n            AND NA.N_REGIONKEY = R_REGIONKEY \n            AND R_NAME = 'AFRICA' \n            AND S_NATIONKEY = NB.N_NATIONKEY \n            AND O_ORDERDATE BETWEEN '1993-12-27' AND date('1993-12-27', '+1 year') \n            AND P_TYPE = 'LARGE PLATED NICKEL'\n    ) AS ALL_NATIONS\nGROUP BY \n    O_YEAR\nORDER BY \n    O_YEAR;"
+      },
+      {
+        "id": "Q8",
+        "label": "TPC-H Query 8",
+        "frequency_per_hour": 1,
+        "sql": "/* TPC-H Query 9 - Adaptada para SQLite */\nSELECT \n    NATION, \n    O_YEAR, \n    SUM(AMOUNT) AS SUM_PROFIT\nFROM \n    (\n        SELECT \n            N_NAME AS NATION, \n            strftime('%Y', O_ORDERDATE) AS O_YEAR, \n            L_EXTENDEDPRICE * (1 - L_DISCOUNT) - PS_SUPPLYCOST * L_QUANTITY AS AMOUNT\n        FROM \n            PART, \n            SUPPLIER, \n            LINEITEM, \n            PARTSUPP, \n            ORDERS, \n            NATION\n        WHERE \n            S_SUPPKEY = L_SUPPKEY \n            AND PS_SUPPKEY = L_SUPPKEY \n            AND PS_PARTKEY = L_PARTKEY \n            AND P_PARTKEY = L_PARTKEY \n            AND O_ORDERKEY = L_ORDERKEY \n            AND S_NATIONKEY = N_NATIONKEY \n            AND P_NAME LIKE '%pale%'\n    ) AS PROFIT\nGROUP BY \n    NATION, \n    O_YEAR\nORDER BY \n    NATION, \n    O_YEAR DESC;"
+      },
+      {
+        "id": "Q9",
+        "label": "TPC-H Query 9",
+        "frequency_per_hour": 1,
+        "sql": "/* TPC-H Query 10 - Adaptada para SQLite */\nSELECT \n    C_CUSTKEY, \n    C_NAME, \n    SUM(L_EXTENDEDPRICE * (1 - L_DISCOUNT)) AS REVENUE, \n    C_ACCTBAL, \n    N_NAME, \n    C_ADDRESS, \n    C_PHONE, \n    C_COMMENT\nFROM \n    CUSTOMER, \n    ORDERS, \n    LINEITEM, \n    NATION\nWHERE \n    C_CUSTKEY = O_CUSTKEY \n    AND L_ORDERKEY = O_ORDERKEY \n    AND O_ORDERDATE >= '1995-02-14' \n    AND O_ORDERDATE < date('1995-02-14', '+3 months') \n    AND L_RETURNFLAG = 'R' \n    AND C_NATIONKEY = N_NATIONKEY\nGROUP BY \n    C_CUSTKEY, \n    C_NAME, \n    C_ACCTBAL, \n    C_PHONE, \n    N_NAME, \n    C_ADDRESS, \n    C_COMMENT\nORDER BY \n    REVENUE DESC\nLIMIT 20;"
+      },
+      {
+        "id": "Q10",
+        "label": "TPC-H Query 10",
+        "frequency_per_hour": 1,
+        "sql": "/* TPC-H Query 11 - Adaptada para SQLite */\nSELECT \n    PS_PARTKEY, \n    SUM(PS_SUPPLYCOST * PS_AVAILQTY) AS VALUE\nFROM \n    PARTSUPP, \n    SUPPLIER, \n    NATION\nWHERE \n    PS_SUPPKEY = S_SUPPKEY \n    AND S_NATIONKEY = N_NATIONKEY \n    AND N_NAME = 'INDIA'\nGROUP BY \n    PS_PARTKEY\nHAVING \n    SUM(PS_SUPPLYCOST * PS_AVAILQTY) > (\n        SELECT \n            SUM(PS_SUPPLYCOST * PS_AVAILQTY) * 0.0001000000\n        FROM \n            PARTSUPP, \n            SUPPLIER, \n            NATION\n        WHERE \n            PS_SUPPKEY = S_SUPPKEY \n            AND S_NATIONKEY = N_NATIONKEY \n            AND N_NAME = 'UNITED STATES'\n    )\nORDER BY \n    VALUE DESC;"
+      },
+      {
+        "id": "Q11",
+        "label": "TPC-H Query 11",
+        "frequency_per_hour": 1,
+        "sql": "/* TPC-H Query 12 - Adaptada para SQLite */\nSELECT \n    l_shipmode, \n    SUM(CASE WHEN o_orderpriority = '1-urgent' OR o_orderpriority = '2-high' THEN 1 ELSE 0 END) AS high_line_count, \n    SUM(CASE WHEN o_orderpriority <> '3-medium' AND o_orderpriority <> '4-not specified' THEN 1 ELSE 0 END) AS low_line_count\nFROM \n    orders, \n    lineitem\nWHERE \n    o_orderkey = l_orderkey \n    AND l_shipmode IN ('SHIP', 'MAIL') \n    AND l_commitdate < l_receiptdate \n    AND l_shipdate < l_commitdate \n    AND l_receiptdate >= '1997-02-03' \n    AND l_receiptdate < date('1997-02-03', '+1 year')\nGROUP BY \n    l_shipmode\nORDER BY \n    l_shipmode;"
+      },
+      {
+        "id": "Q12",
+        "label": "TPC-H Query 12",
+        "frequency_per_hour": 1,
+        "sql": "/* TPC-H Query 13 - Adaptada para SQLite */\nSELECT \n    C_COUNT, \n    COUNT(*) AS CUSTDIST\nFROM \n    (\n        SELECT \n            C_CUSTKEY, \n            COUNT(O_ORDERKEY) AS C_COUNT\n        FROM \n            CUSTOMER \n        LEFT JOIN \n            ORDERS \n        ON \n            C_CUSTKEY = O_CUSTKEY \n            AND O_COMMENT NOT LIKE '%requests%'\n        GROUP BY \n            C_CUSTKEY\n    ) AS C_ORDERS\nGROUP BY \n    C_COUNT\nORDER BY \n    CUSTDIST DESC, \n    C_COUNT DESC;"
+      },
+      {
+        "id": "Q13",
+        "label": "TPC-H Query 13",
+        "frequency_per_hour": 1,
+        "sql": "/* TPC-H Query 14 - Adaptada para SQLite */\nSELECT \n    100.00 * SUM(CASE WHEN p_type LIKE 'PROMO%' THEN l_extendedprice * (1 - l_discount) ELSE 0 END) / \n    SUM(l_extendedprice * (1 - l_discount)) AS promo_revenue\nFROM \n    lineitem, \n    part\nWHERE \n    l_partkey = p_partkey \n    AND l_shipdate >= '1998-09-18' \n    AND l_shipdate < date('1998-09-18', '+1 month');"
+      },
+      {
+        "id": "Q14",
+        "label": "TPC-H Query 14",
+        "frequency_per_hour": 1,
+        "sql": "/* TPC-H Query 15 - Adaptada para SQLite */\nSELECT \n    l_suppkey, \n    SUM(l_extendedprice * (1 - l_discount)) AS sum_price\nFROM \n    lineitem\nWHERE \n    l_shipdate >= '1994-11-30' \n    AND l_shipdate < date('1994-11-30', '+3 months')\nGROUP BY \n    l_suppkey;"
+      },
+      {
+        "id": "Q15",
+        "label": "TPC-H Query 15",
+        "frequency_per_hour": 1,
+        "sql": "/* TPC-H Query 16 - Adaptada para SQLite */\nSELECT \n    p_brand, \n    p_type, \n    p_size, \n    COUNT(DISTINCT ps_suppkey) AS supp_cnt\nFROM \n    partsupp, \n    part\nWHERE \n    p_partkey = ps_partkey \n    AND p_brand <> 'Brand#23' \n    AND LOWER(p_type) LIKE '%small brushed brass%' \n    AND p_size IN (8, 42, 33, 21, 7, 46, 23, 3) \n    AND ps_suppkey NOT IN (\n        SELECT s_suppkey \n        FROM supplier \n        WHERE LOWER(s_comment) LIKE '%carefully%'\n    )\nGROUP BY \n    p_brand, \n    p_type, \n    p_size\nORDER BY \n    supp_cnt DESC, \n    p_brand, \n    p_type, \n    p_size;"
+      },
+      {
+        "id": "Q16",
+        "label": "TPC-H Query 16",
+        "frequency_per_hour": 1,
+        "sql": "/* TPC-H Query 17 - Adaptada para SQLite */\nSELECT \n    SUM(L_EXTENDEDPRICE) / 7.0 AS AVG_YEARLY\nFROM \n    LINEITEM, \n    PART\nWHERE \n    P_PARTKEY = L_PARTKEY \n    AND P_BRAND = 'Brand#52' \n    AND P_CONTAINER = 'WRAP PACK' \n    AND L_QUANTITY < (\n        SELECT 0.2 * AVG(L_QUANTITY) \n        FROM LINEITEM \n        WHERE L_PARTKEY = PART.P_PARTKEY\n    );"
+      },
+      {
+        "id": "Q17",
+        "label": "TPC-H Query 17",
+        "frequency_per_hour": 1,
+        "sql": "/* TPC-H Query 18 - Adaptada para SQLite */\nSELECT \n    C_NAME, \n    C_CUSTKEY, \n    O_ORDERKEY, \n    O_ORDERDATE, \n    O_TOTALPRICE, \n    SUM(L_QUANTITY)\nFROM \n    CUSTOMER, \n    ORDERS, \n    LINEITEM\nWHERE \n    O_ORDERKEY IN (\n        SELECT L_ORDERKEY \n        FROM LINEITEM \n        GROUP BY L_ORDERKEY \n        HAVING SUM(L_QUANTITY) > 25\n    ) \n    AND C_CUSTKEY = O_CUSTKEY \n    AND O_ORDERKEY = L_ORDERKEY\nGROUP BY \n    C_NAME, \n    C_CUSTKEY, \n    O_ORDERKEY, \n    O_ORDERDATE, \n    O_TOTALPRICE\nORDER BY \n    O_TOTALPRICE DESC, \n    O_ORDERDATE\nLIMIT 100;"
+      },
+      {
+        "id": "Q18",
+        "label": "TPC-H Query 18",
+        "frequency_per_hour": 1,
+        "sql": "/* TPC-H Query 19 - Adaptada para SQLite */\nSELECT \n    SUM(l_extendedprice * (1 - l_discount)) AS revenue\nFROM \n    lineitem, \n    part\nWHERE \n    (\n        p_partkey = l_partkey \n        AND p_brand = 'Brand#25' \n        AND p_container IN ('MED PACK', 'SM BAG', 'WRAP PKG', 'MED CAN') \n        AND l_quantity BETWEEN 20 AND (28 + 10) \n        AND p_size BETWEEN 32 AND (13 + 15) \n        AND l_shipmode IN ('AIR', 'AIR') \n        AND l_shipinstruct = 'TAKE BACK RETURN'\n    )\n    OR (\n        p_partkey = l_partkey \n        AND p_brand = 'Brand#43' \n        AND p_container IN ('JUMBO BOX', 'WRAP PKG', 'LG CAN', 'LG PACK') \n        AND l_quantity BETWEEN 25 AND (43 + 10) \n        AND p_size BETWEEN 21 AND (3 + 15) \n        AND l_shipmode IN ('SHIP', 'MAIL') \n        AND l_shipinstruct = 'DELIVER IN PERSON'\n    )\n    OR (\n        p_partkey = l_partkey \n        AND p_brand = 'Brand#44' \n        AND p_container IN ('SM PKG', 'LG CAN', 'MED JAR', 'JUMBO PKG') \n        AND l_quantity BETWEEN 40 AND (34 + 10) \n        AND p_size BETWEEN 8 AND (47 + 15) \n        AND l_shipmode IN ('REG AIR', 'SHIP') \n        AND l_shipinstruct = 'NONE'\n    );"
+      },
+      {
+        "id": "Q19",
+        "label": "TPC-H Query 19",
+        "frequency_per_hour": 1,
+        "sql": "/* TPC-H Query 20 - Adaptada para SQLite */\nSELECT \n    S_NAME, \n    S_ADDRESS\nFROM \n    SUPPLIER, \n    NATION\nWHERE \n    S_SUPPKEY IN (\n        SELECT \n            PS_SUPPKEY \n        FROM \n            PARTSUPP\n        WHERE \n            PS_PARTKEY IN (\n                SELECT \n                    P_PARTKEY \n                FROM \n                    PART \n                WHERE \n                    P_NAME LIKE '%cornsilk%'\n            ) \n            AND PS_AVAILQTY > (\n                SELECT \n                    0.5 * SUM(L_QUANTITY) AS sum_quantity\n                FROM \n                    LINEITEM\n                WHERE \n                    L_PARTKEY = PS_PARTKEY \n                    AND L_SUPPKEY = PS_SUPPKEY \n                    AND L_SHIPDATE >= '1997-12-04' \n                    AND L_SHIPDATE < date('1997-12-04', '+1 year')\n            )\n    ) \n    AND S_NATIONKEY = N_NATIONKEY \n    AND N_NAME = 'UNITED STATES'\nORDER BY \n    S_NAME;"
+      },
+      {
+        "id": "Q20",
+        "label": "TPC-H Query 20",
+        "frequency_per_hour": 1,
+        "sql": "/* TPC-H Query 21 - Adaptada para SQLite */\nSELECT \n    S_NAME, \n    COUNT(*) AS NUMWAIT\nFROM \n    SUPPLIER, \n    LINEITEM AS LA, \n    ORDERS, \n    NATION\nWHERE \n    S_SUPPKEY = LA.L_SUPPKEY \n    AND O_ORDERKEY = LA.L_ORDERKEY \n    AND O_ORDERSTATUS = 'F' \n    AND LA.L_RECEIPTDATE > LA.L_COMMITDATE \n    AND EXISTS (\n        SELECT * \n        FROM LINEITEM AS LB \n        WHERE LB.L_ORDERKEY = LA.L_ORDERKEY \n        AND LB.L_SUPPKEY <> LA.L_SUPPKEY\n    ) \n    AND NOT EXISTS (\n        SELECT * \n        FROM LINEITEM AS LC \n        WHERE LC.L_ORDERKEY = LA.L_ORDERKEY \n        AND LC.L_SUPPKEY <> LA.L_SUPPKEY \n        AND LC.L_RECEIPTDATE > LC.L_COMMITDATE\n    ) \n    AND S_NATIONKEY = N_NATIONKEY \n    AND N_NAME = 'FRANCE'\nGROUP BY \n    S_NAME\nORDER BY \n    NUMWAIT DESC, \n    S_NAME\nLIMIT 100;"
+      },
+      {
+        "id": "Q21",
+        "label": "TPC-H Query 21",
+        "frequency_per_hour": 1,
+        "sql": "/* TPC-H Query 22 - Adaptada para SQLite */\nSELECT \n    cntrycode, \n    COUNT(*) AS numcust, \n    SUM(c_acctbal) AS totacctbal\nFROM \n    (\n        SELECT \n            substr(c_phone, 1, 2) AS cntrycode, \n            c_acctbal\n        FROM \n            customer\n        WHERE \n            substr(c_phone, 1, 2) IN ('32', '11', '29', '25', '22', '15', '12') \n            AND c_acctbal > (\n                SELECT \n                    AVG(c_acctbal) \n                FROM \n                    customer\n                WHERE \n                    c_acctbal > 0.00 \n                    AND substr(c_phone, 1, 2) IN ('29', '26', '29', '22', '12', '28', '14')\n            ) \n            AND NOT EXISTS (\n                SELECT * \n                FROM orders \n                WHERE o_custkey = c_custkey\n            )\n    ) AS custsale\nGROUP BY \n    cntrycode\nORDER BY \n    cntrycode;"
+      },
+      {
+        "id": "Q22",
+        "label": "TPC-H Query 22",
+        "frequency_per_hour": 1,
+        "sql": "SELECT \n    o_orderpriority, \n    COUNT(*) AS order_count\nFROM \n    orders\nWHERE \n    o_orderdate >= '1993-06-17' \n    AND o_orderdate < DATE_ADD('1993-06-17', INTERVAL 3 MONTH)\n    AND EXISTS (\n        SELECT 1 \n        FROM lineitem \n        WHERE l_orderkey = o_orderkey \n        AND l_commitdate < l_receiptdate\n    )\nGROUP BY \n    o_orderpriority\nORDER BY \n    o_orderpriority;"
+      }
+    ]
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "indexes": [
+    {
+      "name": "idx_orders_custkey",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Frequent joins between the `customer` and `orders` tables on `c_custkey = o_custkey`, as seen in queries Q3, Q4, Q9, Q12, Q17, and Q21.",
+      "benefits": "Significantly accelerates lookups for a customer's orders, which is a fundamental and common operation in the workload. This avoids costly full table scans on the `orders` table when starting from a filtered set of customers.",
+      "tradeoffs": "Adds a minor overhead to INSERT and UPDATE operations on the `orders` table. The performance gain for a wide range of critical queries far outweighs this cost."
+    },
+    {
+      "name": "idx_lineitem_orderkey_partkey",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_partkey"
+      ],
+      "where": null,
+      "workload_pattern": "Queries that join `orders` to `lineitem` and `lineitem` to `part`. This pattern is common for analyzing order contents, as seen in Q3, Q7, Q8, Q17, and Q18.",
+      "benefits": "Creates a highly effective index for the most common join paths involving the largest table (`lineitem`). It allows for fast retrieval of all line items for an order (using the first column) and can also efficiently serve queries that filter by both order and part.",
+      "tradeoffs": "This index will be large due to the size of the `lineitem` table, consuming significant disk space. It will also add overhead to all write operations (INSERT, UPDATE, DELETE) on `lineitem`, potentially slowing down data loading."
+    },
+    {
+      "name": "idx_partsupp_partkey",
+      "table": "partsupp",
+      "type": "simple",
+      "columns": [
+        "ps_partkey"
+      ],
+      "where": null,
+      "workload_pattern": "Queries that need to find all suppliers for a given part, as seen in Q2, Q15, and Q19. This involves joining `part` to `partsupp` on `p_partkey = ps_partkey`.",
+      "benefits": "Accelerates the lookup of supplier and supply cost information for specific parts. This is crucial for queries that filter on the `part` table first and then need to find corresponding data in `partsupp`.",
+      "tradeoffs": "Standard write overhead for the `partsupp` table. The benefits for join performance are substantial for this common access pattern."
+    },
+    {
+      "name": "idx_lineitem_returned_items",
+      "table": "lineitem",
+      "type": "partial",
+      "columns": [
+        "l_orderkey"
+      ],
+      "where": "l_returnflag = 'R'",
+      "workload_pattern": "Queries that specifically analyze returned items, such as Q9, which calculates revenue from returned items within a specific timeframe.",
+      "benefits": "Creates a very small and efficient index containing only the keys for returned line items. This allows the query planner to perform joins against a much smaller dataset, drastically improving performance for queries that filter on `l_returnflag = 'R'`.",
+      "tradeoffs": "This index is only useful for queries that include the exact `WHERE l_returnflag = 'R'` predicate. It adds a small overhead to write operations for rows that match this condition."
+    },
+    {
+      "name": "idx_lineitem_shipdate_qty_disc",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_shipdate",
+        "l_quantity",
+        "l_discount"
+      ],
+      "where": null,
+      "workload_pattern": "Range scans on `lineitem` that filter by `l_shipdate` and apply additional filters on `l_quantity` and `l_discount`, as seen directly in Q5.",
+      "benefits": "Allows the database to satisfy all filtering conditions by reading the index alone (an index-only scan might be possible if all selected columns are included, or at least a much more efficient index scan). This significantly reduces the number of rows that must be fetched from the main table, saving I/O.",
+      "tradeoffs": "A large index on the largest table, which consumes considerable disk space and adds overhead to all write operations on `lineitem`. The column order is optimized for queries that provide a range on `l_shipdate`."
+    },
+    {
+      "name": "idx_orders_status_f",
+      "table": "orders",
+      "type": "partial",
+      "columns": [
+        "o_orderkey"
+      ],
+      "where": "o_orderstatus = 'F'",
+      "workload_pattern": "Queries that analyze fulfilled orders that have potential shipping delays, as seen in Q20, which looks for suppliers with late shipments for fulfilled orders.",
+      "benefits": "Creates a small, targeted index on fulfilled orders. This allows queries that filter by `o_orderstatus = 'F'` to quickly identify the relevant orders before joining to the large `lineitem` table, improving query performance significantly.",
+      "tradeoffs": "Only benefits queries that filter specifically for fulfilled orders (`o_orderstatus = 'F'`). Adds a minor overhead to updates that change an order's status to or from 'F'."
+    }
+  ],
+  "materialized_views": [],
+  "global_observations": [],
+  "ontology_notes": null
+}

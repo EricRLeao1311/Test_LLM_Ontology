@@ -1,0 +1,329 @@
+{
+  "indexes": [
+    {
+      "name": "idx_lineitem_orderkey",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Frequent joins with 'orders' table (Q3, Q4, Q6, Q7, Q8, Q9, Q11, Q12, Q13, Q17, Q18, Q20, Q22) and subquery lookups (Q17, Q22). This column likely represents a foreign key.",
+      "benefits": "Significantly speeds up join operations and subquery filtering on 'l_orderkey'.",
+      "tradeoffs": "Adds write overhead to 'lineitem' table for inserts, updates, and deletes.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_lineitem_suppkey",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Frequent joins with 'supplier' table (Q4, Q6, Q7, Q8, Q10, Q14, Q15, Q19, Q20). This column likely represents a foreign key.",
+      "benefits": "Speeds up join operations on 'l_suppkey'.",
+      "tradeoffs": "Adds write overhead to 'lineitem' table.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_lineitem_partkey",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_partkey"
+      ],
+      "where": null,
+      "workload_pattern": "Frequent joins with 'part' table (Q7, Q8, Q13, Q16, Q18, Q19). This column likely represents a foreign key.",
+      "benefits": "Speeds up join operations on 'l_partkey'.",
+      "tradeoffs": "Adds write overhead to 'lineitem' table.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_lineitem_receiptdate_commitdate_shipdate_orderkey",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_receiptdate",
+        "l_commitdate",
+        "l_shipdate",
+        "l_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Accelerates filtering on `l_receiptdate` (range), `l_commitdate`, and `l_shipdate` for Q11. `l_orderkey` is included for join efficiency.",
+      "benefits": "Improves performance for Q11 by supporting range filters and comparisons on date columns, and efficient joins on `l_orderkey`.",
+      "tradeoffs": "Higher write overhead and storage cost due to multiple columns. Partially overlaps with existing `l_shipdate` index for Q20, but targets Q11 specifically.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_lineitem_returnflag_linestatus",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_returnflag",
+        "l_linestatus"
+      ],
+      "where": null,
+      "workload_pattern": "GROUP BY and ORDER BY clauses in Q1 on 'l_returnflag' and 'l_linestatus'.",
+      "benefits": "Improves performance for grouping and ordering operations in Q1.",
+      "tradeoffs": "Adds write overhead to 'lineitem' table.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_orders_orderkey",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Frequent joins with 'lineitem' table (Q3, Q4, Q6, Q7, Q8, Q9, Q11, Q12, Q17, Q20, Q22) and subquery lookups (Q17). This column likely represents a primary key.",
+      "benefits": "Significantly speeds up join operations and subquery filtering on 'o_orderkey'.",
+      "tradeoffs": "Adds write overhead to 'orders' table.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_orders_custkey",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Frequent joins with 'customer' table (Q3, Q4, Q6, Q7, Q9, Q12, Q17, Q21). This column likely represents a foreign key.",
+      "benefits": "Speeds up join operations on 'o_custkey'.",
+      "tradeoffs": "Adds write overhead to 'orders' table.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_orders_orderdate_custkey_orderkey_shippriority",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_orderdate",
+        "o_custkey",
+        "o_orderkey",
+        "o_shippriority"
+      ],
+      "where": null,
+      "workload_pattern": "Range filters on 'o_orderdate' (Q3, Q4, Q9, Q22), joins on 'o_custkey' and 'o_orderkey', and GROUP BY/ORDER BY on 'o_shippriority' (Q3). This index makes the existing 'idx_ORDERS_2' redundant.",
+      "benefits": "Accelerates range filters on 'o_orderdate', improves join performance, and supports efficient grouping/ordering for Q3, Q4, Q9, Q17, Q22. Can enable index-only scans for some queries.",
+      "tradeoffs": "Higher write overhead and storage cost. Replaces the existing 'o_orderdate' index.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_orders_orderstatus_orderkey",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_orderstatus",
+        "o_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Filter on 'o_orderstatus' and join on 'o_orderkey' in Q20.",
+      "benefits": "Improves filter and join performance for Q20.",
+      "tradeoffs": "Adds write overhead to 'orders' table.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_customer_custkey",
+      "table": "customer",
+      "type": "simple",
+      "columns": [
+        "c_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Frequent joins with 'orders' table (Q3, Q4, Q6, Q7, Q9, Q12, Q17, Q21). This column likely represents a primary key.",
+      "benefits": "Significantly speeds up join operations on 'c_custkey'.",
+      "tradeoffs": "Adds write overhead to 'customer' table.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_customer_mktsegment_custkey",
+      "table": "customer",
+      "type": "composite",
+      "columns": [
+        "c_mktsegment",
+        "c_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Filter on 'c_mktsegment' and join on 'c_custkey' in Q3.",
+      "benefits": "Accelerates filtering and joining for Q3.",
+      "tradeoffs": "Adds write overhead to 'customer' table.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_customer_nationkey",
+      "table": "customer",
+      "type": "simple",
+      "columns": [
+        "c_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "Frequent joins with 'nation' table (Q4, Q6, Q7, Q9). This column likely represents a foreign key.",
+      "benefits": "Speeds up join operations on 'c_nationkey'.",
+      "tradeoffs": "Adds write overhead to 'customer' table.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_part_partkey",
+      "table": "part",
+      "type": "simple",
+      "columns": [
+        "p_partkey"
+      ],
+      "where": null,
+      "workload_pattern": "Frequent joins with 'lineitem' and 'partsupp' tables (Q2, Q7, Q8, Q13, Q15, Q16, Q18, Q19). This column likely represents a primary key.",
+      "benefits": "Significantly speeds up join operations on 'p_partkey'.",
+      "tradeoffs": "Adds write overhead to 'part' table.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_part_brand_container_size_partkey",
+      "table": "part",
+      "type": "composite",
+      "columns": [
+        "p_brand",
+        "p_container",
+        "p_size",
+        "p_partkey"
+      ],
+      "where": null,
+      "workload_pattern": "Filters on 'p_brand', 'p_container', 'p_size' in Q15, Q16, Q18. 'p_partkey' is included for join efficiency. Existing indexes cover individual columns, but this composite covers multi-column filtering and joins.",
+      "benefits": "Improves performance for queries with multiple filters on these columns and supports efficient joins.",
+      "tradeoffs": "Higher write overhead and storage cost. Overlaps with existing simple indexes on 'p_brand', 'p_container', 'p_size'.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_partsupp_partkey_suppkey",
+      "table": "partsupp",
+      "type": "composite",
+      "columns": [
+        "ps_partkey",
+        "ps_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Frequent joins with 'part' and 'supplier' tables (Q2, Q8, Q10, Q15, Q19). These columns likely form a composite primary key or unique key.",
+      "benefits": "Significantly speeds up join operations on 'ps_partkey' and 'ps_suppkey'.",
+      "tradeoffs": "Adds write overhead to 'partsupp' table.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_partsupp_partkey_supplycost",
+      "table": "partsupp",
+      "type": "composite",
+      "columns": [
+        "ps_partkey",
+        "ps_supplycost"
+      ],
+      "where": null,
+      "workload_pattern": "Subquery in Q2 uses 'ps_partkey' for filtering and 'ps_supplycost' for MIN aggregation.",
+      "benefits": "Accelerates the subquery in Q2 by providing efficient access to 'ps_supplycost' for a given 'ps_partkey'.",
+      "tradeoffs": "Adds write overhead to 'partsupp' table.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_supplier_suppkey",
+      "table": "supplier",
+      "type": "simple",
+      "columns": [
+        "s_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Frequent joins with 'lineitem' and 'partsupp' tables (Q2, Q4, Q6, Q7, Q8, Q10, Q15, Q19, Q20). This column likely represents a primary key.",
+      "benefits": "Significantly speeds up join operations on 's_suppkey'.",
+      "tradeoffs": "Adds write overhead to 'supplier' table.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_supplier_nationkey",
+      "table": "supplier",
+      "type": "simple",
+      "columns": [
+        "s_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "Frequent joins with 'nation' table (Q2, Q4, Q6, Q7, Q8, Q10, Q19, Q20). This column likely represents a foreign key.",
+      "benefits": "Speeds up join operations on 's_nationkey'.",
+      "tradeoffs": "Adds write overhead to 'supplier' table.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_nation_nationkey",
+      "table": "nation",
+      "type": "simple",
+      "columns": [
+        "n_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "Frequent joins with 'customer' and 'supplier' tables (Q2, Q4, Q6, Q7, Q8, Q9, Q10, Q19, Q20). This column likely represents a primary key.",
+      "benefits": "Significantly speeds up join operations on 'n_nationkey'.",
+      "tradeoffs": "Adds write overhead to 'nation' table.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_nation_regionkey",
+      "table": "nation",
+      "type": "simple",
+      "columns": [
+        "n_regionkey"
+      ],
+      "where": null,
+      "workload_pattern": "Frequent joins with 'region' table (Q2, Q4, Q7). This column likely represents a foreign key.",
+      "benefits": "Speeds up join operations on 'n_regionkey'.",
+      "tradeoffs": "Adds write overhead to 'nation' table.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_nation_name_nationkey_regionkey",
+      "table": "nation",
+      "type": "composite",
+      "columns": [
+        "n_name",
+        "n_nationkey",
+        "n_regionkey"
+      ],
+      "where": null,
+      "workload_pattern": "Filters on 'n_name' (Q2, Q10, Q19, Q20), joins on 'n_nationkey' and 'n_regionkey', and ORDER BY/GROUP BY on 'n_name' (Q2, Q4, Q9).",
+      "benefits": "Covers filters, joins, and group/order by clauses, improving performance for Q2, Q4, Q6, Q7, Q9, Q10, Q19, Q20.",
+      "tradeoffs": "Higher write overhead and storage cost.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_region_regionkey",
+      "table": "region",
+      "type": "simple",
+      "columns": [
+        "r_regionkey"
+      ],
+      "where": null,
+      "workload_pattern": "Frequent joins with 'nation' table (Q2, Q4, Q7). This column likely represents a primary key.",
+      "benefits": "Significantly speeds up join operations on 'r_regionkey'.",
+      "tradeoffs": "Adds write overhead to 'region' table.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_region_name_regionkey",
+      "table": "region",
+      "type": "composite",
+      "columns": [
+        "r_name",
+        "r_regionkey"
+      ],
+      "where": null,
+      "workload_pattern": "Filters on 'r_name' (Q2, Q4, Q7) and joins on 'r_regionkey'.",
+      "benefits": "Accelerates filtering and joining for Q2, Q4, Q7.",
+      "tradeoffs": "Adds write overhead to 'region' table.",
+      "rules_triggered": null
+    }
+  ],
+  "materialized_views": [],
+  "global_observations": [
+    "The workload is TPC-H, which is read-heavy and analytical. Indexes are crucial for join performance and filtering large datasets.",
+    "Many queries involve complex joins and subqueries, benefiting from composite indexes that cover multiple join and filter columns.",
+    "Columns ending with '_key' are frequently used in join conditions, indicating they are likely primary or foreign keys and should be indexed for efficient lookups.",
+    "Existing indexes are mostly simple indexes on single columns. New composite indexes are proposed to cover more specific multi-column access patterns, sometimes making existing simple indexes redundant.",
+    "Functional indexes for `strftime('%Y', ...)` or `substr(c_phone, 1, 2)` were considered but are outside the allowed actions. Base column indexes are suggested where applicable."
+  ],
+  "ontology_notes": null
+}

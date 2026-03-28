@@ -1,0 +1,137 @@
+{
+  "indexes": [
+    {
+      "name": "idx_lineitem_shipdate_returnflag",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_shipdate",
+        "l_returnflag"
+      ],
+      "where": null,
+      "workload_pattern": "Supports frequent lineitem date-range filters on l_shipdate in Q1, Q5, Q6, Q13, Q14, Q19, and Q21; additionally helps Q10 where l_returnflag='R' is combined with an orders date filter. Existing single-column index on l_shipdate is already present, but a composite index can better serve combined predicates and reduce heap visits when l_returnflag is also constrained.",
+      "benefits": "Improves selectivity for date-bounded scans and combined date/return-flag filtering, especially for TPC-H Q10/Q6-style workloads. Can reduce scanning overhead versus the existing single-column shipdate index when both predicates are used.",
+      "tradeoffs": "Adds write overhead on the large lineitem table and increases storage. Overlaps partially with the existing l_shipdate index, so gains are limited to queries that also filter on l_returnflag.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_lineitem_orderkey_shipmode",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_shipmode"
+      ],
+      "where": null,
+      "workload_pattern": "Targets join-heavy queries where lineitem is matched on l_orderkey and then filtered by ship mode, especially Q11 and Q18, and also supports order-centric joins in Q3, Q4, Q7, Q8, and Q22 when lineitem rows are probed by order key plus ship-related filters.",
+      "benefits": "Speeds join probes from orders to lineitem and can reduce row filtering cost for ship mode predicates. Useful for EXISTS/IN patterns and grouped order-level aggregations involving lineitem.",
+      "tradeoffs": "Moderate maintenance cost on the largest table in the schema. Benefit is query-specific and may be smaller for workloads that already use hash joins or when shipmode is not selective.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_orders_custkey_orderdate",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_custkey",
+        "o_orderdate"
+      ],
+      "where": null,
+      "workload_pattern": "Supports customer-to-orders joins combined with order date restrictions in Q3, Q4, Q7, Q8, Q9, Q12, Q17, Q21, and Q22. Existing index on o_orderdate helps date filtering, but a composite index better matches the frequent join predicate o_custkey = c_custkey plus date range filters.",
+      "benefits": "Improves nested-loop join efficiency and date-constrained lookups from customer-driven queries. Can reduce the number of orders rows examined for customers within date windows.",
+      "tradeoffs": "Adds write cost on orders and overlaps with the existing o_orderdate index. If the planner prefers hash joins, some benefit may be muted.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_orders_orderdate_orderstatus",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_orderdate",
+        "o_orderstatus"
+      ],
+      "where": null,
+      "workload_pattern": "Helps queries filtering by order date and status, notably the order-status/date patterns in the workload. The existing single-column index on o_orderdate can be extended conceptually with status for combined filtering.",
+      "benefits": "Narrows order scans more efficiently when both date and status are applied, improving selectivity for reporting and existence checks on orders.",
+      "tradeoffs": "Some overlap with the existing o_orderdate index; incremental gain depends on status selectivity. Adds storage and maintenance overhead on a write-active table.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_part_brand_container",
+      "table": "part",
+      "type": "composite",
+      "columns": [
+        "p_brand",
+        "p_container"
+      ],
+      "where": null,
+      "workload_pattern": "Supports repeated predicates in Q17 and Q18 where part rows are filtered by brand and container before joining to lineitem. Existing indexes on p_brand and p_container separately do not capture the combined equality filters as efficiently.",
+      "benefits": "Improves selectivity for brand/container-driven part lookups and reduces candidate rows before join processing. Helpful for TPC-H Q17/Q18 style selective star-join patterns.",
+      "tradeoffs": "Adds a small amount of storage and write maintenance to the part table. Benefits are concentrated on a subset of queries and may be modest if the optimizer already uses bitmap index combinations.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_part_type_size",
+      "table": "part",
+      "type": "composite",
+      "columns": [
+        "p_type",
+        "p_size"
+      ],
+      "where": null,
+      "workload_pattern": "Supports queries that constrain part by type and size together, notably Q2, Q15, and Q18. The table already has single-column indexes on p_type and p_size, but combined filtering appears frequently in workload predicates.",
+      "benefits": "Better matches multi-column filters and can reduce rechecks and intermediate rows when both part attributes are used together.",
+      "tradeoffs": "Potential overlap with existing single-column indexes on p_type and p_size; may provide limited extra value if the planner prefers bitmap-and plans. Adds maintenance overhead.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_supplier_nationkey",
+      "table": "supplier",
+      "type": "simple",
+      "columns": [
+        "s_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "Supplier is repeatedly joined through s_nationkey in Q2, Q4, Q7, Q8, Q10, Q11, Q19, and Q21. There is no existing index on this foreign-key-like join column.",
+      "benefits": "Speeds lookups from nation to supplier and supports join ordering when supplier is filtered via nation or region constraints.",
+      "tradeoffs": "Adds a small but non-trivial maintenance cost on supplier writes. Since supplier is relatively small, the absolute gain may be limited but still high-confidence due to repeated joins.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_customer_mktsegment",
+      "table": "customer",
+      "type": "simple",
+      "columns": [
+        "c_mktsegment"
+      ],
+      "where": null,
+      "workload_pattern": "Directly supports Q3, which filters customer by c_mktsegment='HOUSEHOLD' before joining to orders and lineitem. No existing index is present on customer filter columns.",
+      "benefits": "Reduces scan volume on customer for segment-based selection and improves join startup cost for segment-restricted queries.",
+      "tradeoffs": "Customer is small, so the benefit is limited in absolute terms. Adds minor storage and maintenance overhead.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    }
+  ],
+  "materialized_views": [],
+  "global_observations": [
+    "The strongest opportunities are on large fact tables lineitem and orders, where repeated joins and date predicates dominate the workload.",
+    "Existing single-column indexes on lineitem(l_shipdate), orders(o_orderdate), and several part columns already cover some filters; recommended composite indexes focus on common paired predicates that are not yet indexed together.",
+    "A few workload predicates use functions or LIKE patterns with leading wildcards, which limits the usefulness of standard btree indexes. I avoided speculative partial indexes because the workload does not show a stable, selective boolean/status subset suitable for a high-confidence partial predicate."
+  ],
+  "ontology_notes": "The ontology favored simple indexes for uncovered WHERE columns and composite indexes for paired predicates on the same table. I used RuleHypCompositeIndex primarily for multi-column filters and join-plus-filter patterns, while RuleHypSimpleIndex supported missing single-column join/filter columns such as supplier.s_nationkey and customer.c_mktsegment. I did not add partial indexes because the workload evidence did not provide a clear, reusable atomic predicate with strong selectivity that would justify the extra complexity under PostgreSQL."
+}

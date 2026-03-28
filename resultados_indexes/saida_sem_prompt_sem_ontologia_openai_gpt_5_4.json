@@ -1,0 +1,316 @@
+{
+  "indexes": [
+    {
+      "name": "idx_customer_mktsegment_custkey",
+      "table": "customer",
+      "type": "composite",
+      "columns": [
+        "c_mktsegment",
+        "c_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q3 filtra por c_mktsegment = 'HOUSEHOLD' e junta customer -> orders por c_custkey.",
+      "benefits": "Reduz o conjunto de clientes antes do join e acelera a localização das chaves de cliente usadas em orders.",
+      "tradeoffs": "Aumenta custo de escrita e armazenamento; utilidade menor se a seletividade de c_mktsegment for baixa."
+    },
+    {
+      "name": "idx_customer_nationkey",
+      "table": "customer",
+      "type": "simple",
+      "columns": [
+        "c_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q4, Q6, Q7 e Q9 usam joins por c_nationkey com nation/supplier.",
+      "benefits": "Acelera joins por nacionalidade a partir de customer em consultas analíticas com múltiplas tabelas.",
+      "tradeoffs": "Ganho limitado pelo tamanho pequeno de customer; adiciona manutenção extra."
+    },
+    {
+      "name": "idx_customer_phone_prefix_partial",
+      "table": "customer",
+      "type": "partial",
+      "columns": [
+        "c_phone"
+      ],
+      "where": "substring(c_phone from 1 for 2) IN ('32','11','29','25','22','15','12')",
+      "workload_pattern": "Q21 filtra clientes por prefixos específicos de telefone e depois aplica anti-join com orders.",
+      "benefits": "Diminui o custo de varredura para o subconjunto de prefixos relevantes na consulta.",
+      "tradeoffs": "Índice especializado para um padrão muito específico; pode ter baixo reaproveitamento em outras consultas."
+    },
+    {
+      "name": "idx_orders_custkey_orderdate_orderkey",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_custkey",
+        "o_orderdate",
+        "o_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q3 e Q9 juntam por o_custkey, filtram por intervalo de o_orderdate e seguem para lineitem por o_orderkey.",
+      "benefits": "Acelera o caminho customer -> orders com predicado temporal e já disponibiliza a chave do pedido para o próximo join.",
+      "tradeoffs": "Mais espaço e custo de atualização; pode sobrepor parcialmente o índice existente em o_orderdate."
+    },
+    {
+      "name": "idx_orders_orderdate_custkey",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_orderdate",
+        "o_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q4, Q7, Q9 e Q22 usam filtros por faixa de o_orderdate e em seguida joins/agrupamentos por cliente ou prioridade.",
+      "benefits": "Melhora consultas dirigidas por intervalo de data e reduz custo de acesso às linhas de orders relevantes.",
+      "tradeoffs": "Pode ser redundante em parte com idx_ORDERS_2; aumenta custo de manutenção em INSERT/UPDATE."
+    },
+    {
+      "name": "idx_orders_orderkey_priority",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_orderkey",
+        "o_orderpriority"
+      ],
+      "where": null,
+      "workload_pattern": "Q11 e Q22 ligam lineitem a orders por o_orderkey e projetam/agrupam o_orderpriority.",
+      "benefits": "Facilita join por chave do pedido e reduz leituras adicionais para recuperar prioridade do pedido.",
+      "tradeoffs": "Índice focado em poucas consultas; benefício depende do plano escolhido pelo otimizador."
+    },
+    {
+      "name": "idx_orders_custkey",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q3, Q9, Q12 e Q21 dependem de joins ou anti-joins de customer para orders por o_custkey.",
+      "benefits": "Acelera tanto joins comuns quanto a verificação de existência/não existência de pedidos por cliente.",
+      "tradeoffs": "Pode ser parcialmente coberto por índices compostos sugeridos; ainda assim consome espaço."
+    },
+    {
+      "name": "idx_lineitem_orderkey",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q3, Q4, Q9, Q11, Q17, Q20 e Q22 fazem joins ou subconsultas por l_orderkey.",
+      "benefits": "Reduz fortemente custo de joins orders -> lineitem e de agregações/subconsultas por pedido.",
+      "tradeoffs": "Índice em tabela grande aumenta custo de escrita e armazenamento."
+    },
+    {
+      "name": "idx_lineitem_partkey",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_partkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q7, Q8, Q13, Q16, Q18 e Q19 relacionam lineitem com part ou partsupp via l_partkey.",
+      "benefits": "Acelera joins por produto em consultas analíticas frequentes do workload TPC-H.",
+      "tradeoffs": "Benefício menor quando o plano preferir varredura ampla; aumenta manutenção."
+    },
+    {
+      "name": "idx_lineitem_suppkey",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q4, Q6, Q8, Q14, Q19 e Q20 fazem joins ou agrupamentos por fornecedor usando l_suppkey.",
+      "benefits": "Melhora acessos por fornecedor e pode reduzir custo de agregações por supplier.",
+      "tradeoffs": "Mais espaço em tabela volumosa; algumas consultas ainda precisarão ler muitas linhas."
+    },
+    {
+      "name": "idx_lineitem_orderkey_suppkey",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q20 usa EXISTS/NOT EXISTS correlacionados por l_orderkey e comparação de l_suppkey; Q4 e Q11 também se beneficiam de joins por pedido.",
+      "benefits": "Muito útil para subconsultas correlacionadas e para localizar rapidamente itens de um pedido por fornecedor.",
+      "tradeoffs": "Sobreposição parcial com índice simples em l_orderkey; custo de manutenção adicional."
+    },
+    {
+      "name": "idx_lineitem_shipdate_partkey",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_shipdate",
+        "l_partkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q13 combina filtro por faixa de l_shipdate com join em l_partkey; Q1, Q5, Q14 e Q19 também filtram por l_shipdate.",
+      "benefits": "Preserva bom acesso por data e melhora o passo seguinte de join com part para consultas temporais.",
+      "tradeoffs": "Pode competir com o índice existente em l_shipdate; ganho depende da seletividade da data."
+    },
+    {
+      "name": "idx_lineitem_receipt_shipmode_orderkey",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_receiptdate",
+        "l_shipmode",
+        "l_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q11 filtra por faixa de l_receiptdate, por l_shipmode e junta com orders por l_orderkey.",
+      "benefits": "Acelera uma consulta clássica do TPC-H orientada a intervalo temporal e modo de envio.",
+      "tradeoffs": "Índice especializado; menos útil fora desse padrão de consulta."
+    },
+    {
+      "name": "idx_lineitem_partkey_quantity",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_partkey",
+        "l_quantity"
+      ],
+      "where": null,
+      "workload_pattern": "Q16 usa join por l_partkey e subconsulta correlacionada com agregação/filtro sobre l_quantity; Q18 também filtra faixas de quantidade por part.",
+      "benefits": "Ajuda a localizar rapidamente lineitems por peça e avaliar predicados ou agregações sobre quantidade.",
+      "tradeoffs": "Pode ter retorno moderado se muitas linhas por partkey precisarem ser lidas de qualquer forma."
+    },
+    {
+      "name": "idx_lineitem_partial_returnflag_orderkey",
+      "table": "lineitem",
+      "type": "partial",
+      "columns": [
+        "l_orderkey"
+      ],
+      "where": "l_returnflag = 'R'",
+      "workload_pattern": "Q9 filtra lineitem por l_returnflag = 'R' e junta com orders por l_orderkey.",
+      "benefits": "Índice enxuto e altamente seletivo para uma consulta recorrente focada em itens retornados.",
+      "tradeoffs": "Só ajuda consultas com esse mesmo predicado; manutenção extra em alterações da coluna."
+    },
+    {
+      "name": "idx_lineitem_partial_commit_receipt_orderkey",
+      "table": "lineitem",
+      "type": "partial",
+      "columns": [
+        "l_orderkey"
+      ],
+      "where": "l_commitdate < l_receiptdate",
+      "workload_pattern": "Q22 verifica EXISTS em lineitem com predicado l_commitdate < l_receiptdate para cada pedido.",
+      "benefits": "Transforma a checagem de existência em acesso mais barato sobre subconjunto relevante de lineitem.",
+      "tradeoffs": "Parcial e específico; benefício concentrado em poucas consultas."
+    },
+    {
+      "name": "idx_part_size_type_partkey",
+      "table": "part",
+      "type": "composite",
+      "columns": [
+        "p_size",
+        "p_type",
+        "p_partkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q2 filtra por p_size e p_type LIKE '%ECONOMY ANODIZED STEEL' e depois junta por p_partkey com partsupp.",
+      "benefits": "Melhora filtragem inicial em part e deixa a chave de junção disponível para seguir ao partsupp.",
+      "tradeoffs": "LIKE com wildcard à esquerda limita parte do benefício em p_type; adiciona redundância com índices simples já existentes."
+    },
+    {
+      "name": "idx_part_brand_container_partkey",
+      "table": "part",
+      "type": "composite",
+      "columns": [
+        "p_brand",
+        "p_container",
+        "p_partkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q16 filtra por p_brand e p_container antes de juntar com lineitem por p_partkey; Q18 também usa p_brand com container.",
+      "benefits": "Reduz o conjunto de peças candidatas em consultas analíticas com filtros combinados de atributos do produto.",
+      "tradeoffs": "Pode sobrepor índices simples de p_brand e p_container; benefício depende da seletividade conjunta."
+    },
+    {
+      "name": "idx_part_type_partkey",
+      "table": "part",
+      "type": "composite",
+      "columns": [
+        "p_type",
+        "p_partkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q7 filtra p_type = 'LARGE PLATED NICKEL' e junta com lineitem por p_partkey; Q13 também usa p_type para cálculo promocional.",
+      "benefits": "Acelera filtros por tipo de peça e o join subsequente com lineitem.",
+      "tradeoffs": "Pode ser redundante com idx_PART_7 em p_type se a necessidade de p_partkey no índice não compensar."
+    },
+    {
+      "name": "idx_partsupp_partkey_suppkey_supplycost",
+      "table": "partsupp",
+      "type": "composite",
+      "columns": [
+        "ps_partkey",
+        "ps_suppkey",
+        "ps_supplycost"
+      ],
+      "where": null,
+      "workload_pattern": "Q2, Q8, Q10 e Q19 usam joins por ps_partkey/ps_suppkey e em Q2 há comparação com MIN(ps_supplycost).",
+      "benefits": "Acelera joins com part e supplier e ajuda na avaliação de custo mínimo por peça.",
+      "tradeoffs": "Índice relativamente largo; custo extra de manutenção em tabela intermediária."
+    },
+    {
+      "name": "idx_partsupp_suppkey_partkey",
+      "table": "partsupp",
+      "type": "composite",
+      "columns": [
+        "ps_suppkey",
+        "ps_partkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q10, Q15 e Q19 partem de supplier ou excluem suppliers e precisam acessar partsupp por fornecedor.",
+      "benefits": "Melhora joins supplier -> partsupp e consultas que contam ou filtram fornecedores por peça.",
+      "tradeoffs": "Pode haver sobreposição com outro índice composto em partsupp; aumenta armazenamento."
+    },
+    {
+      "name": "idx_supplier_nationkey_suppkey",
+      "table": "supplier",
+      "type": "composite",
+      "columns": [
+        "s_nationkey",
+        "s_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q2, Q4, Q6, Q8, Q10, Q19 e Q20 juntam supplier por s_nationkey e s_suppkey.",
+      "benefits": "Acelera tanto filtros por país quanto o acesso à chave do fornecedor para seguir em joins com lineitem/partsupp.",
+      "tradeoffs": "Tabela supplier é pequena, então o ganho absoluto pode ser limitado."
+    },
+    {
+      "name": "idx_nation_regionkey_nationkey",
+      "table": "nation",
+      "type": "composite",
+      "columns": [
+        "n_regionkey",
+        "n_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q2, Q4 e Q7 percorrem region -> nation e depois usam n_nationkey em joins com customer/supplier.",
+      "benefits": "Facilita a expansão eficiente de regiões para nações e o encadeamento dos joins seguintes.",
+      "tradeoffs": "Tabela nation é muito pequena; benefício é mais de consistência de plano do que de grande redução de custo."
+    },
+    {
+      "name": "idx_region_name_regionkey",
+      "table": "region",
+      "type": "composite",
+      "columns": [
+        "r_name",
+        "r_regionkey"
+      ],
+      "where": null,
+      "workload_pattern": "Q2, Q4 e Q7 filtram region por r_name = 'EUROPE'/'ASIA'/'AFRICA' e usam r_regionkey no join com nation.",
+      "benefits": "Permite acesso direto à região filtrada e à chave necessária para o join.",
+      "tradeoffs": "Tabela extremamente pequena; ganho prático tende a ser baixo."
+    }
+  ],
+  "materialized_views": [],
+  "global_observations": [],
+  "ontology_notes": null
+}

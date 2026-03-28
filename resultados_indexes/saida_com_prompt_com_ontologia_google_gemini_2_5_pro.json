@@ -1,0 +1,103 @@
+{
+  "indexes": [
+    {
+      "name": "idx_lineitem_orderkey",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Accelerates joins between `lineitem` and `orders` on `l_orderkey = o_orderkey`. This join pattern appears in numerous queries, including Q3, Q4, Q6, Q7, Q8, Q9, Q11, Q17, Q20, and Q22, making it one of the most critical join conditions in the workload.",
+      "benefits": "Significant reduction in join costs for a large number of queries involving the largest table (`lineitem`). Avoids sequential scans on `lineitem` when it is on the inner side of a nested loop join, or enables more efficient merge or hash joins.",
+      "tradeoffs": "Moderate write overhead and storage cost on the `lineitem` table, which is the largest. Given the read-heavy analytical workload, the performance gains across many queries justify this cost.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_orders_custkey",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Supports frequent joins between `orders` and `customer` on `o_custkey = c_custkey`. This pattern is found in queries Q3, Q4, Q6, Q7, Q9, Q12, Q17, and Q21.",
+      "benefits": "Improves performance for many queries that link customer information to orders, a common and critical operation in this schema. It allows for fast lookups into the `orders` table when starting from `customer`.",
+      "tradeoffs": "Adds write and storage overhead to the `orders` table. The benefit across at least eight distinct queries outweighs this cost.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_partsupp_partkey_suppkey",
+      "table": "partsupp",
+      "type": "composite",
+      "columns": [
+        "ps_partkey",
+        "ps_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Covers the primary join columns for the `partsupp` linking table. Queries like Q2, Q8, and Q19 perform lookups using `ps_partkey` and/or `ps_suppkey` to connect parts with their suppliers.",
+      "benefits": "Provides efficient access to the `partsupp` table. A composite index is more efficient than two separate indexes for lookups involving both columns and can also serve queries filtering only on `ps_partkey`.",
+      "tradeoffs": "Write and storage overhead on the `partsupp` table. As a linking table, it is subject to inserts, but the cost is acceptable for the significant join performance improvement.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_lineitem_partkey_suppkey",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_partkey",
+        "l_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Supports frequent joins from the `lineitem` table to `part` (on `l_partkey`) and `supplier`/`partsupp` (on `l_suppkey`). This pattern is seen in Q2, Q4, Q6, Q7, Q8, Q13, Q16, Q18, and Q19.",
+      "benefits": "Greatly improves performance for queries that analyze line items in the context of specific parts and suppliers. This single composite index can serve lookups on `l_partkey` alone, as well as lookups on both columns.",
+      "tradeoffs": "Additional write and storage overhead on the largest table, `lineitem`. This is a significant index, but its wide applicability across the workload makes it a valuable addition.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_customer_mktsegment",
+      "table": "customer",
+      "type": "simple",
+      "columns": [
+        "c_mktsegment"
+      ],
+      "where": null,
+      "workload_pattern": "Targets the `WHERE c_mktsegment = 'HOUSEHOLD'` filter in query Q3. This allows for a fast initial filtering of the `customer` table before joining to `orders`.",
+      "benefits": "Speeds up Q3 by reducing the number of rows from the `customer` table that need to be processed in subsequent joins. This reduces the intermediate result set size early in the query plan.",
+      "tradeoffs": "Minor write and storage overhead on the `customer` table. The column likely has low cardinality, but the index is still beneficial for quickly finding all customers in a specific segment.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_orders_status_f",
+      "table": "orders",
+      "type": "partial",
+      "columns": [
+        "o_orderstatus"
+      ],
+      "where": "o_orderstatus = 'F'",
+      "workload_pattern": "Directly targets the `WHERE o_orderstatus = 'F'` filter in query Q20, allowing for a fast lookup of all orders with a 'Finished' status before they are joined.",
+      "benefits": "Provides a highly efficient, small index to satisfy a very specific filter in Q20. This avoids a full table scan on `orders` to find the relevant rows for the join, with minimal overhead.",
+      "tradeoffs": "Negligible overhead, as the index only stores entries for orders with status 'F'. The index is specific to one query, but its low cost makes it a worthwhile optimization.",
+      "rules_triggered": [
+        "RuleSimplePartialIndex"
+      ]
+    }
+  ],
+  "materialized_views": [],
+  "global_observations": [
+    "The workload is characterized by complex, multi-table joins typical of analytical (TPC-H) queries. The primary bottleneck appears to be inefficient joins on large tables like `lineitem` and `orders` due to a lack of indexes on key join columns.",
+    "The proposed indexes focus on creating efficient access paths for the most common join keys (e.g., `l_orderkey`, `o_custkey`), which are likely foreign keys not explicitly defined in the provided metadata.",
+    "While several single-column indexes exist on the `part` table, the main performance gains will come from indexing join columns on the larger transaction tables (`lineitem`, `orders`) and linking tables (`partsupp`)."
+  ],
+  "ontology_notes": "The provided ontology rules were applied to the workload. `RuleHypSimpleIndex` was triggered for indexes on single-column predicates, including join conditions (e.g., `o_custkey = c_custkey`) and filters (e.g., `c_mktsegment = 'HOUSEHOLD'`), leading to the suggestions for `idx_lineitem_orderkey`, `idx_orders_custkey`, and `idx_customer_mktsegment`. `RuleHypCompositeIndex` was applied to join conditions involving two columns from the same table, resulting in `idx_partsupp_partkey_suppkey` and `idx_lineitem_partkey_suppkey`. `RuleSimplePartialIndex` was used to create the highly specific `idx_orders_status_f` for the filter on `o_orderstatus` in query Q20."
+}

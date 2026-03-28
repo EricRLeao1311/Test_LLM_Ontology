@@ -1,0 +1,495 @@
+{
+  "indexes": [
+    {
+      "name": "idx_lineitem_shipdate_filtered",
+      "table": "lineitem",
+      "type": "partial",
+      "columns": [
+        "l_shipdate"
+      ],
+      "where": "l_shipdate <= DATE '1995-02-13' - 90",
+      "workload_pattern": "Query Q1 filters lineitem table on l_shipdate with a condition that can be used as a partial index predicate.",
+      "benefits": "Speeds up filtering in Query Q1 by avoiding a full table scan.",
+      "tradeoffs": "Slight overhead on writes to the lineitem table. Storage for the index.",
+      "rules_triggered": [
+        "RuleSimplePartialIndex"
+      ]
+    },
+    {
+      "name": "idx_orders_custkey_orderdate",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_custkey",
+        "o_orderdate"
+      ],
+      "where": null,
+      "workload_pattern": "Query Q3 filters orders by o_custkey and o_orderdate. Query Q9 filters orders by o_orderdate and joins with customer on o_custkey.",
+      "benefits": "Improves performance for queries that filter or join on both customer key and order date.",
+      "tradeoffs": "Increased write overhead on the orders table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_lineitem_orderkey_shipdate",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_shipdate"
+      ],
+      "where": null,
+      "workload_pattern": "Query Q3 joins lineitem and orders on l_orderkey and filters lineitem on l_shipdate.",
+      "benefits": "Speeds up join and filter operations in Query Q3.",
+      "tradeoffs": "Increased write overhead on the lineitem table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_customer_mktsegment",
+      "table": "customer",
+      "type": "simple",
+      "columns": [
+        "c_mktsegment"
+      ],
+      "where": null,
+      "workload_pattern": "Query Q3 filters customer table on c_mktsegment.",
+      "benefits": "Speeds up filtering in Query Q3.",
+      "tradeoffs": "Slight overhead on writes to the customer table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_orders_orderdate_filtered",
+      "table": "orders",
+      "type": "partial",
+      "columns": [
+        "o_orderdate"
+      ],
+      "where": "o_orderdate >= DATE '1996-05-31' AND o_orderdate < DATE '1996-05-31' + INTERVAL '1 year'",
+      "workload_pattern": "Query Q4 filters orders on o_orderdate within a specific date range.",
+      "benefits": "Speeds up filtering in Query Q4 by avoiding a full table scan.",
+      "tradeoffs": "Slight overhead on writes to the orders table. Storage for the index.",
+      "rules_triggered": [
+        "RuleSimplePartialIndex"
+      ]
+    },
+    {
+      "name": "idx_lineitem_shipdate_range",
+      "table": "lineitem",
+      "type": "partial",
+      "columns": [
+        "l_shipdate"
+      ],
+      "where": "l_shipdate >= DATE '1997-06-11' AND l_shipdate < DATE '1997-06-11' + INTERVAL '1 year'",
+      "workload_pattern": "Query Q5 filters lineitem on l_shipdate within a specific date range.",
+      "benefits": "Speeds up filtering in Query Q5 by avoiding a full table scan.",
+      "tradeoffs": "Slight overhead on writes to the lineitem table. Storage for the index.",
+      "rules_triggered": [
+        "RuleSimplePartialIndex"
+      ]
+    },
+    {
+      "name": "idx_orders_orderkey_orderpriority",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_orderkey",
+        "o_orderpriority"
+      ],
+      "where": null,
+      "workload_pattern": "Query Q11 joins orders and lineitem on o_orderkey and filters on o_orderpriority. Query Q22 filters orders on o_orderpriority.",
+      "benefits": "Improves performance for queries that filter or join on order key and order priority.",
+      "tradeoffs": "Increased write overhead on the orders table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_lineitem_orderkey_shipmode",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_shipmode"
+      ],
+      "where": null,
+      "workload_pattern": "Query Q11 joins orders and lineitem on l_orderkey and filters on l_shipmode.",
+      "benefits": "Speeds up join and filter operations in Query Q11.",
+      "tradeoffs": "Increased write overhead on the lineitem table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_customer_custkey_phone",
+      "table": "customer",
+      "type": "composite",
+      "columns": [
+        "c_custkey",
+        "c_phone"
+      ],
+      "where": null,
+      "workload_pattern": "Query Q22 filters customer by c_custkey and uses a substring of c_phone for filtering.",
+      "benefits": "Speeds up filtering and potential joins involving customer key and phone prefix.",
+      "tradeoffs": "Increased write overhead on the customer table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_part_type_size_brand",
+      "table": "part",
+      "type": "composite",
+      "columns": [
+        "p_type",
+        "p_size",
+        "p_brand"
+      ],
+      "where": null,
+      "workload_pattern": "Query Q15 filters part on p_brand, p_type, and p_size. Query Q16 filters part on p_brand and p_container (similar to p_type). Query Q2 filters on p_size and p_type.",
+      "benefits": "Improves performance for queries filtering on part type, size, and brand.",
+      "tradeoffs": "Increased write overhead on the part table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_partsupp_partkey_suppkey",
+      "table": "partsupp",
+      "type": "composite",
+      "columns": [
+        "ps_partkey",
+        "ps_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Queries Q2, Q8, Q10, Q15, Q16, Q17, Q19, Q20 involve joins or subqueries on partsupp using ps_partkey and ps_suppkey.",
+      "benefits": "Speeds up joins and subqueries involving partsupp on partkey and suppkey.",
+      "tradeoffs": "Increased write overhead on the partsupp table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_supplier_nationkey",
+      "table": "supplier",
+      "type": "simple",
+      "columns": [
+        "s_nationkey"
+      ],
+      "where": null,
+      "workload_pattern": "Queries Q2, Q4, Q6, Q7, Q8, Q10, Q11, Q19, Q20, Q21 join supplier with nation on s_nationkey.",
+      "benefits": "Speeds up joins between supplier and nation tables.",
+      "tradeoffs": "Slight overhead on writes to the supplier table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_nation_regionkey",
+      "table": "nation",
+      "type": "simple",
+      "columns": [
+        "n_regionkey"
+      ],
+      "where": null,
+      "workload_pattern": "Queries Q2, Q4, Q7, Q10 join nation with region on n_regionkey.",
+      "benefits": "Speeds up joins between nation and region tables.",
+      "tradeoffs": "Slight overhead on writes to the nation table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_lineitem_returnflag_linestatus",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_returnflag",
+        "l_linestatus"
+      ],
+      "where": null,
+      "workload_pattern": "Query Q1 groups lineitem by l_returnflag and l_linestatus.",
+      "benefits": "Speeds up aggregation in Query Q1.",
+      "tradeoffs": "Increased write overhead on the lineitem table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_orders_custkey",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Queries Q3, Q4, Q9, Q12, Q17, Q18 join orders with customer on o_custkey.",
+      "benefits": "Speeds up joins between orders and customer tables.",
+      "tradeoffs": "Slight overhead on writes to the orders table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_lineitem_orderkey",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Queries Q1, Q3, Q6, Q11, Q17, Q18, Q21 join lineitem with orders on l_orderkey.",
+      "benefits": "Speeds up joins between lineitem and orders tables.",
+      "tradeoffs": "Slight overhead on writes to the lineitem table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_customer_custkey",
+      "table": "customer",
+      "type": "simple",
+      "columns": [
+        "c_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Queries Q3, Q4, Q9, Q12, Q17, Q18, Q22 join customer with orders on c_custkey.",
+      "benefits": "Speeds up joins between customer and orders tables.",
+      "tradeoffs": "Slight overhead on writes to the customer table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_part_partkey",
+      "table": "part",
+      "type": "simple",
+      "columns": [
+        "p_partkey"
+      ],
+      "where": null,
+      "workload_pattern": "Queries Q2, Q8, Q16, Q17, Q19, Q20 join part with partsupp or lineitem on p_partkey.",
+      "benefits": "Speeds up joins involving the part table.",
+      "tradeoffs": "Slight overhead on writes to the part table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_supplier_suppkey",
+      "table": "supplier",
+      "type": "simple",
+      "columns": [
+        "s_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Queries Q2, Q4, Q6, Q8, Q10, Q19, Q20, Q21 join supplier with partsupp or lineitem on s_suppkey.",
+      "benefits": "Speeds up joins involving the supplier table.",
+      "tradeoffs": "Slight overhead on writes to the supplier table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_partsupp_suppkey",
+      "table": "partsupp",
+      "type": "simple",
+      "columns": [
+        "ps_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Queries Q2, Q8, Q10, Q15, Q16, Q19, Q20 join partsupp with supplier on ps_suppkey.",
+      "benefits": "Speeds up joins involving the partsupp table.",
+      "tradeoffs": "Slight overhead on writes to the partsupp table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_lineitem_partkey",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_partkey"
+      ],
+      "where": null,
+      "workload_pattern": "Queries Q2, Q8, Q16, Q17, Q19, Q20 join lineitem with part on l_partkey.",
+      "benefits": "Speeds up joins involving the lineitem table.",
+      "tradeoffs": "Slight overhead on writes to the lineitem table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_lineitem_suppkey",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Queries Q4, Q6, Q8, Q14, Q19, Q20, Q21 join lineitem with supplier on l_suppkey.",
+      "benefits": "Speeds up joins involving the lineitem table.",
+      "tradeoffs": "Slight overhead on writes to the lineitem table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_orders_orderdate",
+      "table": "orders",
+      "type": "simple",
+      "columns": [
+        "o_orderdate"
+      ],
+      "where": null,
+      "workload_pattern": "Queries Q3, Q4, Q9, Q22 filter or join on o_orderdate.",
+      "benefits": "Speeds up filtering and joins on order date.",
+      "tradeoffs": "Slight overhead on writes to the orders table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_lineitem_shipdate",
+      "table": "lineitem",
+      "type": "simple",
+      "columns": [
+        "l_shipdate"
+      ],
+      "where": null,
+      "workload_pattern": "Queries Q1, Q3, Q5, Q6, Q13, Q14, Q15 filter or join on l_shipdate.",
+      "benefits": "Speeds up filtering and joins on ship date.",
+      "tradeoffs": "Slight overhead on writes to the lineitem table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypSimpleIndex"
+      ]
+    },
+    {
+      "name": "idx_part_brand_type",
+      "table": "part",
+      "type": "composite",
+      "columns": [
+        "p_brand",
+        "p_type"
+      ],
+      "where": null,
+      "workload_pattern": "Query Q15 filters on p_brand and p_type. Query Q2 filters on p_type.",
+      "benefits": "Speeds up filtering on part brand and type.",
+      "tradeoffs": "Increased write overhead on the part table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_part_type_brand",
+      "table": "part",
+      "type": "composite",
+      "columns": [
+        "p_type",
+        "p_brand"
+      ],
+      "where": null,
+      "workload_pattern": "Query Q2 filters on p_type and p_size. Query Q15 filters on p_brand and p_type. This index covers the reverse order for potential query optimization.",
+      "benefits": "Speeds up filtering on part type and brand, potentially useful for different query patterns than idx_part_brand_type.",
+      "tradeoffs": "Increased write overhead on the part table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_partsupp_partkey_availqty",
+      "table": "partsupp",
+      "type": "composite",
+      "columns": [
+        "ps_partkey",
+        "ps_availqty"
+      ],
+      "where": null,
+      "workload_pattern": "Query Q20 filters partsupp on ps_partkey and ps_availqty.",
+      "benefits": "Speeds up filtering in Query Q20.",
+      "tradeoffs": "Increased write overhead on the partsupp table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_lineitem_orderkey_returnflag",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_returnflag"
+      ],
+      "where": null,
+      "workload_pattern": "Query Q1 groups by l_returnflag and l_linestatus. Query Q9 filters on l_returnflag.",
+      "benefits": "Speeds up filtering and grouping operations involving l_orderkey and l_returnflag.",
+      "tradeoffs": "Increased write overhead on the lineitem table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_orders_orderkey_orderstatus",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_orderkey",
+        "o_orderstatus"
+      ],
+      "where": null,
+      "workload_pattern": "Query Q21 filters orders on o_orderstatus.",
+      "benefits": "Speeds up filtering on order key and order status.",
+      "tradeoffs": "Increased write overhead on the orders table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_lineitem_orderkey_commitdate_receiptdate",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_commitdate",
+        "l_receiptdate"
+      ],
+      "where": null,
+      "workload_pattern": "Query Q11 filters on l_commitdate < l_receiptdate and l_shipdate < l_commitdate, and joins on l_orderkey.",
+      "benefits": "Speeds up filtering and joins in Query Q11.",
+      "tradeoffs": "Increased write overhead on the lineitem table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    },
+    {
+      "name": "idx_customer_custkey_acctbal",
+      "table": "customer",
+      "type": "composite",
+      "columns": [
+        "c_custkey",
+        "c_acctbal"
+      ],
+      "where": null,
+      "workload_pattern": "Query Q22 filters customer by c_acctbal and c_custkey.",
+      "benefits": "Speeds up filtering and joins involving customer key and account balance.",
+      "tradeoffs": "Increased write overhead on the customer table. Storage for the index.",
+      "rules_triggered": [
+        "RuleHypCompositeIndex"
+      ]
+    }
+  ],
+  "materialized_views": [],
+  "global_observations": [
+    "Many queries involve joins between tables like customer, orders, lineitem, supplier, part, and partsupp. Indexes on foreign key columns or commonly joined columns are beneficial.",
+    "Date columns (o_orderdate, l_shipdate, l_commitdate, l_receiptdate) are frequently used in WHERE clauses for range scans or filtering. Partial indexes are suggested where specific date ranges are common.",
+    "Columns used in GROUP BY or ORDER BY clauses can benefit from indexes.",
+    "The workload consists of many TPC-H queries, which are known to have specific access patterns. Indexes are suggested based on these patterns.",
+    "Existing indexes on l_shipdate and o_orderdate are simple indexes. Composite indexes or partial indexes might offer further optimization for specific query patterns."
+  ],
+  "ontology_notes": "The ontology rules were used to identify potential indexes. RuleHypSimpleIndex was applied to columns frequently used in WHERE clauses or JOIN conditions that are not yet covered by existing indexes. RuleHypCompositeIndex was applied to pairs of columns frequently used together in WHERE clauses of the same query. RuleSimplePartialIndex was applied to specific filtering conditions in WHERE clauses that are repeated across queries, creating partial indexes for efficiency. The selection of indexes prioritizes those with strong evidence from the workload and alignment with the ontology's recommendations."
+}

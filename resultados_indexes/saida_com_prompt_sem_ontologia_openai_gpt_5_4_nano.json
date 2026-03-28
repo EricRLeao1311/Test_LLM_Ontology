@@ -1,0 +1,67 @@
+{
+  "indexes": [
+    {
+      "name": "idx_lineitem_shipdate_orderkey",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_shipdate",
+        "l_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Supports TPC-H style date-range scans on lineitem and subsequent joins/aggregations involving l_orderkey (Q1, Q3, Q4, Q5, Q6, Q13, Q14).",
+      "benefits": "Improves pruning of lineitem by ship date and speeds access to lineitem rows used for joining/grouping by order.",
+      "tradeoffs": "Additional index size/maintenance overhead.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_lineitem_orderkey_commit_receipt",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_commitdate",
+        "l_receiptdate"
+      ],
+      "where": null,
+      "workload_pattern": "Targets order-level correlated EXISTS/NOT EXISTS logic comparing commit/receipt dates within the same l_orderkey (Q11, Q20, Q22).",
+      "benefits": "Enables more efficient lookups and range filtering for predicates on l_commitdate/l_receiptdate scoped by l_orderkey.",
+      "tradeoffs": "Larger composite index with additional write overhead.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_orders_orderdate_orderpriority",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_orderdate",
+        "o_orderpriority"
+      ],
+      "where": null,
+      "workload_pattern": "Supports queries that filter orders by o_orderdate range and then group/aggregate by o_orderpriority (Q22).",
+      "benefits": "Speeds range-restricted aggregation when the grouping key is included in the access path.",
+      "tradeoffs": "Additional index maintenance overhead.",
+      "rules_triggered": null
+    },
+    {
+      "name": "idx_customer_mktsegment_custkey",
+      "table": "customer",
+      "type": "composite",
+      "columns": [
+        "c_mktsegment",
+        "c_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Optimizes selective filtering on customer segment plus join to orders via c_custkey (Q3).",
+      "benefits": "Reduces the number of customer rows participating in joins for the targeted segment.",
+      "tradeoffs": "Additional index maintenance overhead.",
+      "rules_triggered": null
+    }
+  ],
+  "materialized_views": [],
+  "global_observations": [
+    "The workload is dominated by TPC-H predicates on lineitem.l_shipdate and orders.o_orderdate, plus correlated EXISTS/NOT EXISTS predicates using lineitem.l_orderkey with l_commitdate/l_receiptdate comparisons.",
+    "Existing indexes include lineitem(l_shipdate) and orders(o_orderdate); proposed composites aim to extend these patterns with join keys and correlated predicate columns."
+  ],
+  "ontology_notes": null
+}

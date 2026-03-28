@@ -1,0 +1,130 @@
+{
+  "indexes": [
+    {
+      "name": "idx_lineitem_shipdate_orderkey",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_shipdate",
+        "l_orderkey"
+      ],
+      "where": null,
+      "workload_pattern": "Supports repeated lineitem date-range filters in Q1, Q5, Q13, Q14, Q15, Q17 and the shipdate-driven subquery in Q19; second column helps after date filtering for joins/grouping by orderkey in Q3, Q4, Q9, Q10, Q11, Q18, Q20, Q21, and Q22.",
+      "benefits": "Improves selectivity for date-based scans and reduces heap visits for join probes on filtered lineitem rows. Can speed up several frequent TPC-H queries that start from shipdate predicates.",
+      "tradeoffs": "Adds write overhead on lineitem inserts/updates and extra storage. Partially overlaps with the existing single-column shipdate index, but adds join usefulness that the existing index lacks.",
+      "rules_triggered": [
+        "existing index overlap considered",
+        "join+range-filter access path"
+      ]
+    },
+    {
+      "name": "idx_lineitem_orderkey_receiptdate",
+      "table": "lineitem",
+      "type": "composite",
+      "columns": [
+        "l_orderkey",
+        "l_receiptdate"
+      ],
+      "where": null,
+      "workload_pattern": "Targets orderkey-centric joins and semi/anti-join checks in Q3, Q4, Q9, Q10, Q11, Q18, Q20, and Q22. The receiptdate column is relevant for predicates like l_receiptdate >= ... and l_receiptdate > l_commitdate in Q11, Q20, and Q22.",
+      "benefits": "Speeds join lookups on lineitem by orderkey and helps evaluate receiptdate-based filters or EXISTS/NOT EXISTS checks on matching order rows. Useful for queries that start from orders and probe lineitem repeatedly.",
+      "tradeoffs": "Extra maintenance cost on a large fact table and some redundancy with other lineitem indexes. Benefit is highest where orderkey joins dominate and row filtering by receiptdate is applied after the lookup.",
+      "rules_triggered": [
+        "join-heavy fact table",
+        "semi/anti-join support"
+      ]
+    },
+    {
+      "name": "idx_orders_custkey_orderdate",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_custkey",
+        "o_orderdate"
+      ],
+      "where": null,
+      "workload_pattern": "Helps customer-to-orders joins in Q3, Q4, Q5, Q7, Q8, Q9, Q10, Q12, and Q21, and date-range constrained order access in Q3/Q5/Q9/Q22. Complements existing o_orderdate index by supporting join locality on o_custkey.",
+      "benefits": "Improves nested-loop or merge-style plans when joining from customer into orders and then filtering by orderdate. Can reduce sort or scan work for queries grouping or ordering by order date after customer lookup.",
+      "tradeoffs": "Moderate storage and write overhead on orders. Overlaps with the existing o_orderdate index, but should be materially better for combined join-plus-date predicates.",
+      "rules_triggered": [
+        "existing index overlap considered",
+        "join+range-filter access path"
+      ]
+    },
+    {
+      "name": "idx_orders_orderdate_custkey",
+      "table": "orders",
+      "type": "composite",
+      "columns": [
+        "o_orderdate",
+        "o_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Addresses the frequent date-range restrictions on orders in Q3, Q4, Q5, Q9, Q10, Q12, Q21, and Q22 while preserving the ability to fetch customer keys from the filtered order set.",
+      "benefits": "Can make order-date filtering more efficient than the current single-column date index when the optimizer benefits from carrying o_custkey into subsequent joins. Useful when many queries scan a limited time window and then join onward.",
+      "tradeoffs": "Some overlap with the existing o_orderdate index, so incremental gain depends on plan shape. Additional write and storage cost on the orders table.",
+      "rules_triggered": [
+        "existing index overlap considered",
+        "range-filter plus join key"
+      ]
+    },
+    {
+      "name": "idx_part_brand_container_size_partkey",
+      "table": "part",
+      "type": "composite",
+      "columns": [
+        "p_brand",
+        "p_container",
+        "p_size",
+        "p_partkey"
+      ],
+      "where": null,
+      "workload_pattern": "Supports the highly selective part predicates in Q16, Q18, and Q19 where p_brand and p_container are combined with p_size, and joins proceed via p_partkey. Also helps Q8's p_type filter only indirectly, but is primarily justified by the brand/container/size-driven queries.",
+      "benefits": "Improves lookup speed for repeated selective part filters and supplies the join key immediately after filtering, reducing join cost against lineitem and partsupp. Can meaningfully reduce candidate rows for several TPC-H queries.",
+      "tradeoffs": "Larger index size than single-column alternatives and added maintenance cost on part updates. Some overlap with existing single-column indexes on p_brand, p_container, and p_size, but the composite structure is more useful for the actual query patterns.",
+      "rules_triggered": [
+        "multi-predicate filter",
+        "join key included after selective columns"
+      ]
+    },
+    {
+      "name": "idx_partsupp_partkey_suppkey",
+      "table": "partsupp",
+      "type": "composite",
+      "columns": [
+        "ps_partkey",
+        "ps_suppkey"
+      ],
+      "where": null,
+      "workload_pattern": "Supports joins between part/partsupp and supplier/partsupp in Q2, Q8, Q10, Q11, and Q19, especially where partsupp is probed by part key and supplier key together.",
+      "benefits": "Improves join efficiency on the bridge table partsupp and reduces repeated lookups in queries that correlate part and supplier relationships. Particularly helpful for nested-loop joins and grouped aggregations by part key.",
+      "tradeoffs": "Adds index maintenance on an 8k-row table and storage overhead. Benefit is lower than on the largest fact tables, but still justified by repeated join-heavy workload.",
+      "rules_triggered": [
+        "bridge-table join support"
+      ]
+    },
+    {
+      "name": "idx_customer_mktsegment_custkey",
+      "table": "customer",
+      "type": "composite",
+      "columns": [
+        "c_mktsegment",
+        "c_custkey"
+      ],
+      "where": null,
+      "workload_pattern": "Targets Q3 and Q7 where c_mktsegment = 'HOUSEHOLD' filters customer before joining to orders, and then c_custkey is used immediately in join conditions.",
+      "benefits": "Reduces customer rows early for the segment filter and supports efficient join probing into orders. The table is small, so the gain is modest but high-confidence for the repeated segment-based query pattern.",
+      "tradeoffs": "Small additional write/storage cost, though on a 1.5k-row table this is minimal. Overlap with a possible single-column segment index is avoided by making the join key part of the access path.",
+      "rules_triggered": [
+        "selective filter plus join key"
+      ]
+    }
+  ],
+  "materialized_views": [],
+  "global_observations": [
+    "The workload is classic TPC-H: most benefit comes from indexing join keys paired with the most selective filters, especially on lineitem and orders.",
+    "Existing single-column indexes on lineitem(l_shipdate), orders(o_orderdate), and several part columns already cover some filters; the best incremental value is from composite indexes that preserve join locality after filtering.",
+    "Given the synthetic workload and modest table sizes for dimension tables, favoring a few high-impact composite indexes over many single-column indexes is the best tradeoff."
+  ],
+  "ontology_notes": null
+}
