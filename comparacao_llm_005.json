@@ -1,0 +1,177 @@
+[
+  {
+    "scenario": "baseline_sem_indices_extra",
+    "power": 2.488824871656721,
+    "throughput": 9.554231430529006,
+    "qphh": 4.876351998560498,
+    "tuning_size_mb": 0.0
+  },
+  {
+    "scenario": "saida_com_prompt_com_ontologia_google_gemini_2_5_flash",
+    "power": 2732.0217134165086,
+    "throughput": 5164.614065322585,
+    "qphh": 3756.3063996268475,
+    "tuning_size_mb": 22.515625
+  },
+  {
+    "scenario": "saida_com_prompt_com_ontologia_google_gemini_2_5_flash_lite",
+    "power": 2537.001585953029,
+    "throughput": 5446.007152181323,
+    "qphh": 3717.059157747635,
+    "tuning_size_mb": 52.59375
+  },
+  {
+    "scenario": "saida_com_prompt_com_ontologia_google_gemini_2_5_pro",
+    "power": 1837.6337300314012,
+    "throughput": 3267.370283194454,
+    "qphh": 2450.3530033242923,
+    "tuning_size_mb": 8.484375
+  },
+  {
+    "scenario": "saida_com_prompt_com_ontologia_openai_gpt_5_4",
+    "power": 2071.3852681343833,
+    "throughput": 3589.9535945316757,
+    "qphh": 2726.935457431838,
+    "tuning_size_mb": 9.4375
+  },
+  {
+    "scenario": "saida_com_prompt_com_ontologia_openai_gpt_5_4_mini",
+    "power": 8.265271671581727,
+    "throughput": 25.540357275369374,
+    "qphh": 14.529211660313397,
+    "tuning_size_mb": 12.7265625
+  },
+  {
+    "scenario": "saida_com_prompt_com_ontologia_openai_gpt_5_4_nano",
+    "power": 7.131450972698889,
+    "throughput": 22.893168985988517,
+    "qphh": 12.77738283974022,
+    "tuning_size_mb": 17.9375
+  },
+  {
+    "scenario": "saida_com_prompt_sem_ontologia_google_gemini_2_5_flash",
+    "power": 1772.3999517409297,
+    "throughput": 2965.02460487106,
+    "qphh": 2292.424364419497,
+    "tuning_size_mb": 28.5625
+  },
+  {
+    "scenario": "saida_com_prompt_sem_ontologia_google_gemini_2_5_flash_lite",
+    "power": 2376.3238455558107,
+    "throughput": 5492.2002844400295,
+    "qphh": 3612.650896569339,
+    "tuning_size_mb": 81.2109375
+  },
+  {
+    "scenario": "saida_com_prompt_sem_ontologia_google_gemini_2_5_pro",
+    "power": 1965.6751581620588,
+    "throughput": 3481.475180401021,
+    "qphh": 2615.998714807035,
+    "tuning_size_mb": 11.0078125
+  },
+  {
+    "scenario": "saida_com_prompt_sem_ontologia_openai_gpt_5_4",
+    "power": 1842.844959705984,
+    "throughput": 3204.6694375369207,
+    "qphh": 2430.1664388450276,
+    "tuning_size_mb": 20.34375
+  },
+  {
+    "scenario": "saida_com_prompt_sem_ontologia_openai_gpt_5_4_mini",
+    "power": 225.66462810543086,
+    "throughput": 667.7464031986524,
+    "qphh": 388.1839045434045,
+    "tuning_size_mb": 17.703125
+  },
+  {
+    "scenario": "saida_com_prompt_sem_ontologia_openai_gpt_5_4_nano",
+    "power": 7.130835351590889,
+    "throughput": 22.12049379361455,
+    "qphh": 12.559363006862787,
+    "tuning_size_mb": 16.703125
+  },
+  {
+    "scenario": "saida_sem_prompt_com_ontologia_google_gemini_2_5_flash",
+    "power": 1371.5870753545867,
+    "throughput": 3126.8037030247588,
+    "qphh": 2070.913698404552,
+    "tuning_size_mb": 171.890625
+  },
+  {
+    "scenario": "saida_sem_prompt_com_ontologia_google_gemini_2_5_flash_lite",
+    "power": 154.90748822893383,
+    "throughput": 714.0553449254451,
+    "qphh": 332.58460568529875,
+    "tuning_size_mb": 17.953125
+  },
+  {
+    "scenario": "saida_sem_prompt_com_ontologia_google_gemini_2_5_pro",
+    "power": 131.52875365201453,
+    "throughput": 803.8973579602897,
+    "qphh": 325.17013632353184,
+    "tuning_size_mb": 18.5859375
+  },
+  {
+    "scenario": "saida_sem_prompt_com_ontologia_openai_gpt_5_4",
+    "power": 1454.9527327717437,
+    "throughput": 2524.9810681792005,
+    "qphh": 1916.697186658405,
+    "tuning_size_mb": 35.03125
+  },
+  {
+    "scenario": "saida_sem_prompt_com_ontologia_openai_gpt_5_4_mini",
+    "power": 309.9799694286857,
+    "throughput": 655.6088953371776,
+    "qphh": 450.8055293957614,
+    "tuning_size_mb": 18.09375
+  },
+  {
+    "scenario": "saida_sem_prompt_com_ontologia_openai_gpt_5_4_nano",
+    "power": 2141.852830726287,
+    "throughput": 4780.605776253676,
+    "qphh": 3199.899063166739,
+    "tuning_size_mb": 40.171875
+  },
+  {
+    "scenario": "saida_sem_prompt_sem_ontologia_google_gemini_2_5_flash",
+    "power": 1167.494006685833,
+    "throughput": 2564.028526924778,
+    "qphh": 1730.1699159782497,
+    "tuning_size_mb": 141.84375
+  },
+  {
+    "scenario": "saida_sem_prompt_sem_ontologia_google_gemini_2_5_flash_lite",
+    "power": 2107.757737999793,
+    "throughput": 3632.674710753914,
+    "qphh": 2767.0920171233415,
+    "tuning_size_mb": 36.65625
+  },
+  {
+    "scenario": "saida_sem_prompt_sem_ontologia_google_gemini_2_5_pro",
+    "power": 7.417064468850086,
+    "throughput": 46.32716133828349,
+    "qphh": 18.536761915309476,
+    "tuning_size_mb": 18.4453125
+  },
+  {
+    "scenario": "saida_sem_prompt_sem_ontologia_openai_gpt_5_4",
+    "power": 3104.3823511428764,
+    "throughput": 6630.610406705694,
+    "qphh": 4536.953815489138,
+    "tuning_size_mb": 56.9296875
+  },
+  {
+    "scenario": "saida_sem_prompt_sem_ontologia_openai_gpt_5_4_mini",
+    "power": 85.29195386822474,
+    "throughput": 645.7123825197096,
+    "qphh": 234.6786542104172,
+    "tuning_size_mb": 15.875
+  },
+  {
+    "scenario": "saida_sem_prompt_sem_ontologia_openai_gpt_5_4_nano",
+    "power": 386.81086407106886,
+    "throughput": 1041.533148715319,
+    "qphh": 634.7254029997804,
+    "tuning_size_mb": 30.0546875
+  }
+]
